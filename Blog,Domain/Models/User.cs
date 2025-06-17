@@ -1,19 +1,20 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
+
 namespace Blog_Domain.Models;
 
-class User
+public class User : IdentityUser<int>
 {
-    public int UserId { get; set; }
-    public string UserName { get; set; } 
-    public string Email { get; set; } 
-    public string Password { get; set; }
+   
 
-    public ICollection<Post> Posts { get; set; }
-    public ICollection<Coment> Coments { get; set; }
+    public ICollection<Post>?Posts { get; set; }
+    public ICollection<Coment>? Coments { get; set; }
 
 }
