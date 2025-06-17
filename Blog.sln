@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35818.85 d17.13
+VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Application", "Blog\Blog.Application.csproj", "{78543851-5662-4A10-9B71-A0E3AC0951A8}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.CrossCutting", "Blog.CrossCutting\Blog.CrossCutting.csproj", "{3B91F42B-F47F-4FA4-ABE4-4F1CDA155834}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogAPI", "BlogAPI\BlogAPI.csproj", "{BCCDA87D-D87A-49E5-BCF3-BA4E5841F0DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TesteXunit", "TesteXunit\TesteXunit.csproj", "{6BB4F828-E187-418F-BF4C-8930A91F4169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BCCDA87D-D87A-49E5-BCF3-BA4E5841F0DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCCDA87D-D87A-49E5-BCF3-BA4E5841F0DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCCDA87D-D87A-49E5-BCF3-BA4E5841F0DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB4F828-E187-418F-BF4C-8930A91F4169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB4F828-E187-418F-BF4C-8930A91F4169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB4F828-E187-418F-BF4C-8930A91F4169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB4F828-E187-418F-BF4C-8930A91F4169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
