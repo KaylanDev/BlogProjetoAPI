@@ -8,10 +8,10 @@ namespace Blog_Domain.Repository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> Get();
-        T GetById(int id);
-        T Create(T entity);
-        bool Update(T entity);
-        bool Delete(int id);
+       Task<IEnumerable<T>> GetAsync();
+       Task<T> GetByIdAsync(int id);
+       Task<T> CreateAsync(T entity);
+       Task<bool> UpdateAsync(T entity);
+        Task<bool> DeleteAsync(int id);
     }
 }

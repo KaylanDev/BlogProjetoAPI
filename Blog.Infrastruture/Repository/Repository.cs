@@ -1,5 +1,6 @@
 ﻿using Blog.Infrastruture.Context;
 using Blog_Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,38 +11,48 @@ namespace Blog.Infrastruture.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
 
         public Repository(AppDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public IEnumerable<T> Get()
+        public async Task<IEnumerable<T>> GetAsync()
         {
-         var content =  _context.Set<T>().ToList();
+         var content = await _context.Set<T>().ToListAsync();
 
             return content;
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var content = await _context.Set<T>().FindAsync(id);
+            if (content == null)
+            {
+                throw new KeyNotFoundException($"Entity with id {id} not found.");
+            }
+            return content;
         }
 
-        public bool Update(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+             _context.Set<T>().Update(entity);
+           var result =  await _context.SaveChangesAsync();
+            return result > 0;
         }
-        public T Create(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
-            _context.Set<T>().Add(entity);
-            _context.SaveChangesAsync();
+           await _context.Set<T>().AddAsync(entity);
+           await _context.SaveChangesAsync();
             return entity;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Remove(await GetByIdAsync(id));
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
         }
     }
 }
