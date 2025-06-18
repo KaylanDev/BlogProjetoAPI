@@ -25,7 +25,7 @@ public class GetTeste : IClassFixture<RepositoryxUnit>
         // Arrange
         var expectedCount = 3; // Adjust based on your test data
         // Act
-        var posts = repository.Get();
+        var posts = repository.GetAsync();
         // Assert
        
         posts.Should().NotBeNull();

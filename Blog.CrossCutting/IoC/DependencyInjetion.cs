@@ -1,4 +1,6 @@
-﻿using Blog.Infrastruture.Context;
+﻿using Blog.Application.Interfaces;
+using Blog.Application.Services;
+using Blog.Infrastruture.Context;
 using Blog.Infrastruture.Repository;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
@@ -32,6 +34,7 @@ public static class  DependencyInjetion
 
         }).AddEntityFrameworkStores<AppDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUserService,UserService>();
 
         return services;
     }
