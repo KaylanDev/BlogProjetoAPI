@@ -35,6 +35,8 @@ public static class  DependencyInjetion
         }).AddEntityFrameworkStores<AppDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserService,UserService>();
+        services.AddScoped<IPostsRepository,PostsRepository>();
+        services.AddScoped<IPostService,PostService>();
 
         return services;
     }

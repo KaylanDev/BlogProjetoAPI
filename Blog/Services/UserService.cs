@@ -29,14 +29,14 @@ namespace Blog.Application.Services
         {
             var users = await _userManager.Users.ToListAsync();
             var userDTO = users.UserForDTOLIst();
-
+            
             return userDTO;
         }
 
         public async Task<UserDTO> GetByNameAsync(string name)
         {
             var user = await _userManager.FindByNameAsync(name);
-
+            
             if (user == null)
             {
                 throw new ArgumentNullException("Usuario n encontrado!"); // or throw an exception if preferred
