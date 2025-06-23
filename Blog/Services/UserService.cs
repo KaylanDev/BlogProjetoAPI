@@ -54,6 +54,7 @@ namespace Blog.Application.Services
             userveridic.UserName = user.UserName;
             userveridic.Email = user.Email;
             await _userManager.UpdateAsync(userveridic);
+       
 
             return userDto; 
         }

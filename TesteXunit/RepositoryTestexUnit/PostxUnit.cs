@@ -12,26 +12,31 @@ using System.Threading.Tasks;
 
 namespace TesteXunit.RepositoryTestexUnit;
 
-public class RepositoryxUnit
+public class PostxUnit : IDisposable
 {
-    public readonly IRepository<Post> _repository;
+    public readonly IPostsRepository _repository;
     public static DbContextOptions<AppDbContext> contextoptions;
-    
+    private  AppDbContext Context; // Propriedade estática para acessar o contexto do banco de dados
 
-    
+
 
     private const string conectionString = "Data Source=SHEISLINDA;Initial Catalog=BlogDB;Integrated Security=True;Trust Server Certificate=True";
 
-    static RepositoryxUnit()
+    static PostxUnit()
     {
         contextoptions = new DbContextOptionsBuilder<AppDbContext>().UseSqlServer(conectionString).Options;
     }
 
-    public RepositoryxUnit()
+    public PostxUnit()
     {
-        var context = new AppDbContext(contextoptions);
-        _repository = new Repository<Post>(context);
+        Context = new AppDbContext(contextoptions);
+        Context.Database.EnsureDeleted(); // Limpa o banco de dados antes de cada teste
+        Context.Database.EnsureCreated(); // Cria o banco de dados antes de cada teste
+        _repository = new PostsRepository(Context);
     }
 
-
+    public void Dispose()
+    {
+        Context.Dispose(); // Libera recursos no final da execução de todos os testes da classe
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Blog_Domain.Models;
+﻿using Blog.Application.DTOs;
+using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Blog.Application.Interfaces
 {
  public  interface IPostService
     {
-        Task<IEnumerable<Post>> GetAsync();
-        Task<Post> GetByIdAsync(int id);
-        Task<Post> CreateAsync(Post entity);
-        Task<bool> UpdateAsync(Post entity);
+        Task<IEnumerable<PostDTO>> GetAsync();
+        Task<PostDTO> GetByIdAsync(int id);
+        Task<PostDTO> CreateAsync(PostDTO entity);
+        Task<bool> UpdateAsync(PostDTO entity);
         Task<bool> DeleteAsync(int id);
 
 

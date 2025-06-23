@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,14 +20,25 @@ namespace Blog.Infrastruture.Repository
         }
         public async Task<IEnumerable<T>> GetAsync()
         {
-         var content = await _context.Set<T>().ToListAsync();
+         var content = await _context.Set<T>().AsNoTracking().ToListAsync();
 
             return content;
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var content = await _context.Set<T>().FindAsync(id);
+            var entityType = typeof(T);
+            var keyProperty = _context.Model.FindEntityType(entityType)?.FindPrimaryKey()?.Properties.FirstOrDefault();
+            if (keyProperty == null)
+                throw new InvalidOperationException($"A chave primária não foi encontrada para o tipo {entityType.Name}.");
+
+            var parameter = Expression.Parameter(entityType, "e");
+            var property = Expression.Property(parameter, keyProperty.Name);
+            var idValue = Expression.Constant(id);
+            var equal = Expression.Equal(property, idValue);
+            var lambda = Expression.Lambda<Func<T, bool>>(equal, parameter);
+
+            var content = await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(lambda);
             if (content == null)
             {
                 throw new KeyNotFoundException($"Entity with id {id} not found.");
