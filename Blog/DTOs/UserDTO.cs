@@ -8,11 +8,12 @@ using Blog_Domain.Models;
 
 namespace Blog.Application.DTOs;
 
-public      class UserDTO
+public   class UserDTO
 {
+    public int UserId { get; set; }
     public string UserName { get; set; }
     public string Email { get; set; }
-    public string Password { get; set; }
+   
     public UserDTO()
     {
         
@@ -23,7 +24,8 @@ public      class UserDTO
     {
         return new UserDTO
         {
-            UserName = user.UserName,
+            UserId = user.UserId,
+            UserName = user.Username,
             Email = user.Email,
         };
 
@@ -33,7 +35,8 @@ public      class UserDTO
     {
         return new User
         {
-            UserName = user.UserName,
+            UserId = user.UserId,
+            Username = user.UserName,
             Email = user.Email,
         };
 

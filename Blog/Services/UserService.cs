@@ -7,88 +7,96 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Application.DTOs.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Blog_Domain.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
+using Microsoft.AspNet.Identity;
 
-namespace Blog.Application.Services
+namespace Blog.Application.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly IUserRepository _userManager;
+    private readonly PasswordHasher passwordHasher = new PasswordHasher();
+    public UserService(IUserRepository userManager)
     {
-        private readonly UserManager<User> _userManager;
+        _userManager = userManager;
+    }
 
-        public UserService(UserManager<User> userManager)
+
+    public async Task<IEnumerable<UserDTO>> GetAsync()
+    {
+        var users = await _userManager.GetAsync();
+        var userDTO = users.UserForDTOLIst();
+        
+        return userDTO;
+    }
+
+    public async Task<UserDTO> GetByIdAsync(int id)
+    {
+        var user = await _userManager.GetByIdAsync(id);
+        
+        if (user == null)
         {
-            _userManager = userManager;
+            return null; // or throw an exception if preferred
+        }
+        return user;
+    }
+    public async Task<UserDTO> UpdateAsync(UserDTO userDto,string password)
+    {
+        User user = await _userManager.GetByIdAsync(userDto.UserId);
+        
+        if (!CheckPasswordAsync(user,password))
+        {
+            return null;
+        }
+        user.Username = user.Username;
+        user.Email = user.Email;
+        await _userManager.UpdateAsync(user);
+   
+
+        return user; 
+    }
+    public async Task<UserDTO> CreateAsync(User user)
+    {
+       user.PasswordHash = HashPassword(user.Password);
+        // Verifica se o usuário já existe
+        var existingUser = await _userManager.GetByNameAsync(user.Username);
+        if (existingUser != null)
+        {
+            throw new Exception("Usuário já existe.");
+        }
+        // Cria o usuário 
+        var result =  await _userManager.CreateAsync(user);
+
+        return user;
+    }
+
+    public async Task<bool> DeleteAsync(string name,string password)
+    {
+        
+        var userveridic = await _userManager.GetByNameAsync(name);
+        if (!(CheckPasswordAsync(userveridic, password)))
+        {
+            return false;
         }
 
-
-        public async Task<IEnumerable<UserDTO>> GetAsync()
+        var result = await _userManager.DeleteAsync(userveridic.UserId);
+        if (!result)
         {
-            var users = await _userManager.Users.ToListAsync();
-            var userDTO = users.UserForDTOLIst();
-            
-            return userDTO;
+            throw new Exception("ocorreu um erro ao deletar usuario!");
         }
 
-        public async Task<UserDTO> GetByNameAsync(string name)
-        {
-            var user = await _userManager.FindByNameAsync(name);
-            
-            if (user == null)
-            {
-                throw new ArgumentNullException("Usuario n encontrado!"); // or throw an exception if preferred
-            }
-            return user;
-        }
-        public async Task<UserDTO> Update(UserDTO userDto,string name)
-        {
-            User user = userDto;
-            var userveridic = await _userManager.FindByNameAsync(name);
-            if ( !(await _userManager.CheckPasswordAsync(userveridic,userDto.Password)))
-            {
-                return null;
-            }
-            userveridic.UserName = user.UserName;
-            userveridic.Email = user.Email;
-            await _userManager.UpdateAsync(userveridic);
-       
+        return true;
+    }
 
-            return userDto; 
-        }
-        public async Task<UserDTO> Create(UserDTO userDto)
-        {
-            var user = userDto; 
-          var result =  await _userManager.CreateAsync(user,userDto.Password);
-
-            if (result.Errors.Count() > 0)
-            {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            return userDto;
-        }
-
-        public async Task<UserDTO> Delete(UserDTO userDto)
-        {
-            
-            var userveridic = await _userManager.FindByNameAsync(userDto.UserName);
-            if (!(await _userManager.CheckPasswordAsync(userveridic, userDto.Password)))
-            {
-                return null;
-            }
-    
-            var result = await _userManager.DeleteAsync(userveridic);
-            if (result.Errors.Count() > 0)
-            {
-                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
-
-            return userDto;
-        }
-
-
+    private bool CheckPasswordAsync(User userveridic, string password)
+    {
+        var result = passwordHasher.VerifyHashedPassword(userveridic.PasswordHash, password);
+        return result == PasswordVerificationResult.Success;
+    }
+    private string HashPassword(string password)
+    {
+        return passwordHasher.HashPassword(password);
     }
 }

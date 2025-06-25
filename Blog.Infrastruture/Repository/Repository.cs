@@ -41,7 +41,7 @@ namespace Blog.Infrastruture.Repository
             var content = await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(lambda);
             if (content == null)
             {
-                throw new KeyNotFoundException($"Entity with id {id} not found.");
+                return null;
             }
             return content;
         }

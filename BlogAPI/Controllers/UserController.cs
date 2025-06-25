@@ -43,7 +43,7 @@ namespace Blog.API.Controllers
                 return BadRequest("dados invalidos");
             }
         
-            var createdUser = await _userService.Create(userDto);
+            var createdUser = await _userService.CreateAsync(userDto);
             return CreatedAtAction(nameof(GetByName), new { name = createdUser.UserName }, createdUser);
         }
         [HttpPut("{name}")]
@@ -54,7 +54,7 @@ namespace Blog.API.Controllers
             {
                 return BadRequest("Dados invalidos");
             }
-            var updatedUser = await _userService.Update(userDto,name);
+            var updatedUser = await _userService.UpdateAsync(userDto,name);
 
             if (updatedUser is null) return BadRequest("senha invalida!");
             
