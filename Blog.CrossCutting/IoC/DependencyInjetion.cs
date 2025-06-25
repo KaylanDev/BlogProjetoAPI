@@ -4,7 +4,6 @@ using Blog.Infrastruture.Context;
 using Blog.Infrastruture.Repository;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,21 +21,12 @@ public static class  DependencyInjetion
     {
         // Add your infrastructure services here
           services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BlogDatabase")));
-        services.AddIdentity<User, IdentityRole<int>>(opc =>
-        {
-            //senha
-            opc.Password.RequireDigit = true; //requer 1 digito numerico
-            opc.Password.RequiredLength = 3; // define o tamanho minimo
-
-            //usuario name
-            opc.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+"; // define os caracteres permitidos no nome de usuario
-
-
-        }).AddEntityFrameworkStores<AppDbContext>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserService,UserService>();
         services.AddScoped<IPostsRepository,PostsRepository>();
         services.AddScoped<IPostService,PostService>();
+        services.AddScoped<IComentsRepository,ComentsRepository>();
+        services.AddScoped<IComentsService,ComentsService>();
 
         return services;
     }
