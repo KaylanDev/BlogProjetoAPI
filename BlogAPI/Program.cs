@@ -1,3 +1,4 @@
+using Blog.API.ExceptionHandler;
 using Blog.CrossCutting.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ConfigureExeptionHandler();
 }
 
 app.UseHttpsRedirection();
