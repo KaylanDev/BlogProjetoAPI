@@ -19,6 +19,7 @@ namespace Blog.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            throw new Exception("teste concluido");
             var users = await _userService.GetAsync();
             if (users is null || users.Count() == 0)
             {
@@ -26,25 +27,25 @@ namespace Blog.API.Controllers
             }
             return Ok(users);
         }
-        [HttpGet("{name}")]
-        public async Task<IActionResult> GetByName(string name)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int  id)
         {
-            if (name is null) return BadRequest("O campo Nome é necessario!");
+            if (id <= 0) return BadRequest("Id invalido!");
 
-            var user = await _userService.GetByNameAsync(name);
+            var user = await _userService.GetByIdAsync(id);
             return Ok(user);
         }
         [HttpPost]
-        public async Task<IActionResult> Create(UserDTO userDto)
+        public async Task<IActionResult> Create(UserDTO userDto,string password)
         {    
            
-            if (userDto == null || string.IsNullOrEmpty(userDto.Password))
+            if (userDto == null || string.IsNullOrEmpty(password))
             {
                 return BadRequest("dados invalidos");
             }
-        
-            var createdUser = await _userService.CreateAsync(userDto);
-            return CreatedAtAction(nameof(GetByName), new { name = createdUser.UserName }, createdUser);
+            
+            var createdUser = await _userService.CreateAsync(userDto,password);
+            return CreatedAtAction(nameof(GetById), new { name = createdUser.UserName }, createdUser);
         }
         [HttpPut("{name}")]
         public async Task<IActionResult> Update(string name,UserDTO userDto)
@@ -61,14 +62,14 @@ namespace Blog.API.Controllers
             return Ok(updatedUser);
         }
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] UserDTO userDto)
+        public async Task<IActionResult> Delete(string username, string password)
         {
-            if (userDto == null || string.IsNullOrEmpty(userDto.UserName))
+            if (username == null || password == null)
             {
-                return BadRequest("Dados invalidos.");
+                return BadRequest("Dados invalidos");
             }
-            var deletedUser = await _userService.Delete(userDto);
-            if (deletedUser is null) return BadRequest("Senha invalida");
+            var deletedUser = await _userService.DeleteAsync(username,password);
+            if (!deletedUser) return BadRequest("Senha invalida");
             return Ok(deletedUser);
         }
     }

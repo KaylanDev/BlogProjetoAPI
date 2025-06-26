@@ -22,9 +22,13 @@ public static class  DependencyInjetion
         // Add your infrastructure services here
           services.AddDbContext<AppDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BlogDatabase")));
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        // registra o User
         services.AddScoped<IUserService,UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        // registra o Post
         services.AddScoped<IPostsRepository,PostsRepository>();
-        services.AddScoped<IPostService,PostService>();
+        services.AddScoped<IPostService, PostService>();
+        // registra o Comment
         services.AddScoped<IComentsRepository,ComentsRepository>();
         services.AddScoped<IComentsService,ComentsService>();
 

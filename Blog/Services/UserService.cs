@@ -57,11 +57,12 @@ public class UserService : IUserService
 
         return user; 
     }
-    public async Task<UserDTO> CreateAsync(User user)
+    public async Task<UserDTO> CreateAsync(UserDTO UserDTO,string password)
     {
-       user.PasswordHash = HashPassword(user.Password);
+        User user = UserDTO;
+       user.PasswordHash = HashPassword(password);
         // Verifica se o usuário já existe
-        var existingUser = await _userManager.GetByNameAsync(user.Username);
+        var existingUser = await _userManager.GetByIdAsync(user.UserId);
         if (existingUser != null)
         {
             throw new Exception("Usuário já existe.");
@@ -69,7 +70,7 @@ public class UserService : IUserService
         // Cria o usuário 
         var result =  await _userManager.CreateAsync(user);
 
-        return user;
+        return UserDTO;
     }
 
     public async Task<bool> DeleteAsync(string name,string password)
