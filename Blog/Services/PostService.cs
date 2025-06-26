@@ -61,7 +61,9 @@ namespace Blog.Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var result = await _postRepository.DeleteAsync(id);
+            if (id <= 0) return false;
+            var existingPost = await _postRepository.GetByIdAsync(id);
+            var result = await _postRepository.DeleteAsync(existingPost);
             return result;
         }
 

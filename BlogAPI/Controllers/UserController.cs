@@ -19,7 +19,6 @@ namespace Blog.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            throw new Exception("teste concluido");
             var users = await _userService.GetAsync();
             if (users is null || users.Count() == 0)
             {
@@ -33,6 +32,10 @@ namespace Blog.API.Controllers
             if (id <= 0) return BadRequest("Id invalido!");
 
             var user = await _userService.GetByIdAsync(id);
+            if (user is null)
+            {
+                return NotFound("Usuario n encontrado");
+            }
             return Ok(user);
         }
         [HttpPost]
@@ -45,17 +48,17 @@ namespace Blog.API.Controllers
             }
             
             var createdUser = await _userService.CreateAsync(userDto,password);
-            return CreatedAtAction(nameof(GetById), new { name = createdUser.UserName }, createdUser);
+            return CreatedAtAction(nameof(GetById), new { id = createdUser.UserId }, createdUser);
         }
-        [HttpPut("{name}")]
-        public async Task<IActionResult> Update(string name,UserDTO userDto)
+        [HttpPut("{password}")]
+        public async Task<IActionResult> Update(string password,UserDTO userDto)
         {
            
-            if (userDto == null || string.IsNullOrEmpty(userDto.UserName) ||name is null)
+            if (userDto == null || string.IsNullOrEmpty(userDto.UserName) ||password is null)
             {
                 return BadRequest("Dados invalidos");
             }
-            var updatedUser = await _userService.UpdateAsync(userDto,name);
+            var updatedUser = await _userService.UpdateAsync(userDto,password);
 
             if (updatedUser is null) return BadRequest("senha invalida!");
             
@@ -70,7 +73,7 @@ namespace Blog.API.Controllers
             }
             var deletedUser = await _userService.DeleteAsync(username,password);
             if (!deletedUser) return BadRequest("Senha invalida");
-            return Ok(deletedUser);
+            return Ok($"Usuario {username} deletado com sucesso!");
         }
     }
 }

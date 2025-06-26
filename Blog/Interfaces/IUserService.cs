@@ -13,7 +13,7 @@ public interface IUserService
     public Task<IEnumerable<UserDTO>> GetAsync();
     public Task<UserDTO> GetByIdAsync(int id);
     public Task<UserDTO> CreateAsync(UserDTO userDto,string password);
-   public  Task<UserDTO> UpdateAsync(UserDTO userDto,string name);
+   public  Task<UserDTO> UpdateAsync(UserDTO userDto,string password);
    public  Task<bool> DeleteAsync(string username,string password);
    
 }

@@ -50,8 +50,8 @@ public class UserService : IUserService
         {
             return null;
         }
-        user.Username = user.Username;
-        user.Email = user.Email;
+        user.Username = userDto.UserName;
+        user.Email = userDto.Email;
         await _userManager.UpdateAsync(user);
    
 
@@ -62,7 +62,7 @@ public class UserService : IUserService
         User user = UserDTO;
        user.PasswordHash = HashPassword(password);
         // Verifica se o usuário já existe
-        var existingUser = await _userManager.GetByIdAsync(user.UserId);
+        var existingUser = await _userManager. GetByNameAsync(user.Username);
         if (existingUser != null)
         {
             throw new Exception("Usuário já existe.");
@@ -70,19 +70,19 @@ public class UserService : IUserService
         // Cria o usuário 
         var result =  await _userManager.CreateAsync(user);
 
-        return UserDTO;
+        return result;
     }
 
     public async Task<bool> DeleteAsync(string name,string password)
     {
-        
-        var userveridic = await _userManager.GetByNameAsync(name);
-        if (!(CheckPasswordAsync(userveridic, password)))
+
+        var user = await _userManager.GetByNameAsync(name);
+        if (!(CheckPasswordAsync(user, password)))
         {
             return false;
         }
 
-        var result = await _userManager.DeleteAsync(userveridic.UserId);
+        var result = await _userManager.DeleteAsync(user);
         if (!result)
         {
             throw new Exception("ocorreu um erro ao deletar usuario!");
@@ -93,6 +93,10 @@ public class UserService : IUserService
 
     private bool CheckPasswordAsync(User userveridic, string password)
     {
+        if (userveridic is null || password is null)
+        {
+            return false;
+        }
         var result = passwordHasher.VerifyHashedPassword(userveridic.PasswordHash, password);
         return result == PasswordVerificationResult.Success;
     }

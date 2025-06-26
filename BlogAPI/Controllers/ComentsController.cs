@@ -54,12 +54,12 @@ public class ComentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = createdComent.ComentId }, createdComent);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Put(ComentsDTO comentDto)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Put(int id,ComentsDTO comentDto)
     {
-        if (comentDto == null)
+        if (comentDto == null|| id != comentDto.ComentId)
         {
-            return BadRequest("Coment nao pode ser null.");
+            return BadRequest("Dados invalidos");
         }
         var updated = await _comentsService.UpdateAsync(comentDto);
         if (!updated)

@@ -51,7 +51,8 @@ namespace Blog.Application.Services
         public async Task<bool> DeleteAsync(int id)
         {
             if (id <= 0) return false;
-            var result = await _comentsRepository.DeleteAsync(id);
+            var existingComent = await _comentsRepository.GetByIdAsync(id);
+            var result = await _comentsRepository.DeleteAsync(existingComent);
             return result;
         }
 

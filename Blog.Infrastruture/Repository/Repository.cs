@@ -59,9 +59,10 @@ namespace Blog.Infrastruture.Repository
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(T entity)
         {
-            _context.Set<T>().Remove(await GetByIdAsync(id));
+           
+            _context.Set<T>().Remove(entity);
             var result = await _context.SaveChangesAsync();
 
             return result > 0;
