@@ -26,6 +26,15 @@ namespace Blog.Infrastruture.Configuration
                 .WithMany(p => p.Coments)
                 .HasForeignKey(c => c.PostId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasData(new Coment
+            {
+                ComentId = 1,
+                Content = "Este é o primeiro comentário.",
+                CreatedAt = new DateTime(2025, 06, 25),
+                PostId = 1, // Assumindo que o post com PostId 1 já existe
+                UserId = 1 // Assumindo que o usuário com UserId 1 já existe
+            });
         }
     }
 }

@@ -29,6 +29,17 @@ namespace Blog.Infrastruture.Configuration
             builder.HasMany(p => p.Coments)
             .WithOne(c => c.Post)
             .HasForeignKey(c => c.PostId);
+
+            builder.HasData(new Post
+            {
+                PostId = 1,
+                Title = "Primeiro Post",
+                Content = "Este é o conteúdo do primeiro post.",
+                CreatedAt = new DateTime(2025, 06, 25),
+                UpdatedAt = new DateTime(2025,06,25),
+                UserId = 1 // Assumindo que o usuário com UserId 1 já existe
+            });
+
         }
     }
 }

@@ -13,7 +13,8 @@ namespace Blog.Infrastruture.Context;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+     : base(options)
     {
     }
 
@@ -23,6 +24,7 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        //add entidades para teste
         modelBuilder.ApplyConfiguration(new PostConfiguration());
         modelBuilder.ApplyConfiguration(new ComentConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
