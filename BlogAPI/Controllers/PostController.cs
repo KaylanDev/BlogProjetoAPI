@@ -1,4 +1,4 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.Application.DTOs.PostsDTOModel;
 using Blog.Application.Interfaces;
 using Blog_Domain.Models;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +43,22 @@ namespace Blog.API.Controllers
             PostDTO postDto = post;
             return Ok(postDto);
         }
+
+        [HttpGet("Get_tittle")]
+        public async Task<IActionResult> GetPostByTittle(string tittle)
+        {
+            if (string.IsNullOrWhiteSpace(tittle))
+            {
+                return BadRequest("O titulo n pode estar vazio");
+            }
+            var posts = await _postService.GetPostByTittle(tittle);
+            if (posts == null || !posts.Any())
+            {
+                return NotFound($"Post com o titulo '{tittle}' nao encontrado.");
+            }
+            return Ok(posts);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(PostDTO postDto)
         {

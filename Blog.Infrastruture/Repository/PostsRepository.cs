@@ -1,6 +1,7 @@
 ﻿using Blog.Infrastruture.Context;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,17 @@ namespace Blog.Infrastruture.Repository
     {
         public PostsRepository(AppDbContext context) : base(context)
         {
+
+
+
+        }
+
+        public async Task<IEnumerable<Post>> GetPostByTittleAsync(string tittle)
+        {
+            var posts = await _context.Posts
+                .Where(p => p.Title.Contains(tittle)).ToListAsync();
+
+            return posts;
         }
     }
 }

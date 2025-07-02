@@ -1,4 +1,4 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.Application.DTOs.PostsDTOModel;
 using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace Blog.Application.Interfaces
         Task<PostDTO> CreateAsync(PostDTO entity);
         Task<bool> UpdateAsync(PostDTO entity);
         Task<bool> DeleteAsync(int id);
+        Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle);
 
 
     }

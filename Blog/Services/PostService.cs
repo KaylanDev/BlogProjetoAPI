@@ -1,5 +1,4 @@
-﻿using Blog.Application.DTOs;
-using Blog.Application.Interfaces;
+﻿using Blog.Application.Interfaces;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
 using Blog.Application.DTOs.Extensions;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.PortableExecutable;
+using Blog.Application.DTOs.PostsDTOModel;
 
 namespace Blog.Application.Services
 {
@@ -39,6 +39,13 @@ namespace Blog.Application.Services
 
 
         }
+        public async Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle)
+        {
+            var posts = await _postRepository.GetPostByTittleAsync(tittle);
+            if (posts == null) throw new ArgumentNullException(nameof(posts), "N foi encontrado Posts com esse titulo");
+            var postDTOs = posts.PostsForDTOLIst();
+            return postDTOs;
+        }
 
         public async Task<bool> UpdateAsync(PostDTO entity)
         {
@@ -67,6 +74,6 @@ namespace Blog.Application.Services
             return result;
         }
 
-
+        
     }
 }

@@ -9,5 +9,8 @@ namespace Blog_Domain.Repository
 {
   public  interface IPostsRepository : IRepository<Post>
     {
+        public Task<IEnumerable<Post>> GetPostByTittleAsync(string tittle);
+
+
     }
 }
