@@ -1,4 +1,4 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.Application.DTOs.UserModel;
 using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -15,5 +15,6 @@ public interface IUserService
     public Task<UserDTO> CreateAsync(UserDTO userDto,string password);
    public  Task<UserDTO> UpdateAsync(UserDTO userDto,string password);
    public  Task<bool> DeleteAsync(string username,string password);
+    public Task<UserDTOPosts> GetPostsAndComents();
    
 }

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Blog_Domain.Models;
 
-namespace Blog.Application.DTOs;
+namespace Blog.Application.DTOs.UserModel;
 
 public   class UserDTO
 {

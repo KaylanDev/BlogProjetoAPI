@@ -16,7 +16,7 @@ namespace Blog_Domain.Models
         public int UserId { get;  set; }
         // Navigation properties
         public virtual User? User { get; set; }
-        public virtual ICollection<Coment>? Coments { get; set; }
+        public virtual IEnumerable<Coment>? Coments { get; set; }
 
      
     }

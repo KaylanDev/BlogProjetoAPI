@@ -1,4 +1,5 @@
-﻿using Blog_Domain.Models;
+﻿using Blog.Application.DTOs.UserModel;
+using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

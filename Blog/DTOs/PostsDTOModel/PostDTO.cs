@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blog.Application.DTOs;
+namespace Blog.Application.DTOs.PostsDTOModel;
 
 public class PostDTO
 {
@@ -20,7 +20,7 @@ public class PostDTO
 
     }
 
-    public static implicit operator PostDTO(Blog_Domain.Models.Post post)
+    public static implicit operator PostDTO(Post post)
     {
         return new PostDTO
         {

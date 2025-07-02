@@ -1,4 +1,5 @@
-﻿using Blog_Domain.Models;
+﻿using Blog.Application.DTOs.PostsDTOModel;
+using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace Blog.Application.DTOs.Extensions
         public static IEnumerable<PostDTO> PostsForDTOLIst(this IEnumerable<Post> users)
         {
             return users.Select(user => (PostDTO)user);
+        }
+
+        public static IEnumerable<PostDTOComents> PostsComentsForDTOLIst(this IEnumerable<Post> users)
+        {
+            return users.Select(user => (PostDTOComents)user);
         }
     }
 }

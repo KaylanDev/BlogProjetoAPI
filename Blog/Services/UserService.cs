@@ -1,5 +1,4 @@
-﻿using Blog.Application.DTOs;
-using Blog.Application.Interfaces;
+﻿using Blog.Application.Interfaces;
 using Blog_Domain.Repository;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using Blog_Domain.Models;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using Microsoft.AspNet.Identity;
+using Blog.Application.DTOs.UserModel;
 
 namespace Blog.Application.Services;
 
@@ -103,5 +103,17 @@ public class UserService : IUserService
     private string HashPassword(string password)
     {
         return passwordHasher.HashPassword(password);
+    }
+
+    public async Task<UserDTOPosts> GetPostsAndComents()
+    {
+       var user = await _userManager.GetPostsAndComents();
+       
+        if (user == null)
+        {
+            return null; // or throw an exception if preferred
+        }
+        UserDTOPosts userdto = user;
+        return userdto;
     }
 }

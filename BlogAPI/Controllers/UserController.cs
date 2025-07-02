@@ -1,7 +1,14 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.API.Pagination;
+using Blog.API.PaginationHandler;
 using Blog.Application.Interfaces;
+using Blog.Application.DTOs.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Blog.Application.DTOs.UserModel;
+using Blog.Application.DTOs;
+using Blog_Domain.Models;
+using Blog.Application.DTOs.PostsDTOModel;
 
 namespace Blog.API.Controllers
 {
@@ -26,6 +33,38 @@ namespace Blog.API.Controllers
             }
             return Ok(users);
         }
+        
+        [HttpGet("Paged_List_Post")]
+        public async Task<ActionResult<PagedList<PostDTOComents>>> Get([FromQuery] PaginationParams paginationParams)
+        {
+            // 'AsQueryable()' é importante se você estiver trabalhando com IQueryable (ex: Entity Framework)
+            // para que o Skip/Take sejam traduzidos para SQL
+            var produtosQuery = await _userService.GetPostsAndComents();
+
+            var pagedProdutos = PagedList<PostDTOComents>.ToPagedList(
+                produtosQuery.Posts,
+                paginationParams.PageNumber,
+                paginationParams.PageSize
+            );
+
+            // Adicionar os metadados de paginação aos headers HTTP é uma boa prática RESTful
+            Response.Headers.Append("X-Pagination",
+                System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    pagedProdutos.PageNumber,
+                    pagedProdutos.PageSize,
+                    pagedProdutos.TotalCount,
+                    pagedProdutos.TotalPages,
+                    pagedProdutos.HasPrevious,
+                    pagedProdutos.HasNext
+                }, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+
+            
+
+            return Ok(pagedProdutos); // Retorna a lista de produtos da página
+        //}
+}
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int  id)
         {
@@ -38,6 +77,18 @@ namespace Blog.API.Controllers
             }
             return Ok(user);
         }
+
+        [HttpGet("Posts")]
+        public async Task<IActionResult> GetPostsAndComents()
+        {
+            var user = await _userService.GetPostsAndComents();
+            if (user is null)
+            {
+                return NotFound("Usuario n encontrado");
+            }
+            return Ok(user);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(UserDTO userDto,string password)
         {    

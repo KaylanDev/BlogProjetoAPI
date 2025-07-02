@@ -10,5 +10,6 @@ namespace Blog_Domain.Repository
    public interface IUserRepository : IRepository<User>
     {
         public Task<User> GetByNameAsync(string name);
+        public Task<User> GetPostsAndComents();
     }
 }

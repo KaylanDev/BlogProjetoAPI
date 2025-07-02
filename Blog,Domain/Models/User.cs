@@ -16,7 +16,7 @@ public class User
     public string Username { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
-    public ICollection<Post>?Posts { get; set; }
-    public ICollection<Coment>? Coments { get; set; }
+    public IEnumerable<Post>?Posts { get; set; }
+    public IEnumerable<Coment>? Coments { get; set; }
 
 }
