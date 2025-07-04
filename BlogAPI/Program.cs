@@ -22,6 +22,13 @@ if (app.Environment.IsDevelopment())
     app.ConfigureExeptionHandler();
 }
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/Imagens" // A URL para acessar suas imagens será /Imagens/...
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
