@@ -1,6 +1,8 @@
-﻿using Blog.Application.DTOs.PostsDTOModel;
+﻿using Blog.API.ExceptionHandler;
+using Blog.Application.DTOs.PostsDTOModel;
 using Blog.Application.Interfaces;
 using Blog_Domain.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,10 +16,68 @@ namespace Blog.API.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
-        public PostController(IPostService postService)
+        private IWebHostEnvironment _hostingEnvironment;
+
+
+        public PostController(IPostService postService, IWebHostEnvironment hostingEnvironment)
         {
             _postService = postService;
+            _hostingEnvironment = hostingEnvironment;
         }
+
+        private async Task<Result<string>> UploudImg( IFormFile img)
+        {
+            if (img == null)
+            {
+                return Result<string>.Failure("Imagem não pode ser nula.");
+            }
+
+            string imageUrl = string.Empty;
+
+            if (string.IsNullOrEmpty(imageUrl) && img.Length > 0)
+            {
+                // Validação do tipo de arquivo (opcional, mas recomendado)
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(img.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return Result<string>.Failure("Tipo de arquivo não permitido. Apenas JPG, JPEG, PNG e GIF são aceitos.");
+                }
+
+                // Garante que a pasta de uploads exista
+                var uploadsFolder = Path.Combine(_hostingEnvironment.ContentRootPath, "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Gera um nome de arquivo único para evitar colisões
+                var uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await img.CopyToAsync(stream);
+                }
+
+                // Constrói a URL para a imagem
+                imageUrl = $"{Request.Scheme}://{Request.Host}/Imagens/{uniqueFileName}";
+                
+            }
+
+
+
+
+
+            return Result<string>.Success(imageUrl);
+        }
+
+
+
+
+
+
 
 
         [HttpGet]
@@ -59,21 +119,34 @@ namespace Blog.API.Controllers
             return Ok(posts);
         }
 
+        [HttpPost("Upload")]
+        public async Task<IActionResult> Upload(IFormFile img)
+        {
+            if (img == null)
+            {
+                return BadRequest(Result<Post>.Failure("a imagem n pode ser nula!"));
+            }
+            var result = await UploudImg(img);
+
+            return result.IsSuccess 
+                ? Ok(result) 
+                : BadRequest(result);
+        }
         [HttpPost]
         public async Task<IActionResult> Create(PostDTO postDto)
         {
             if (postDto == null)
             {
-                return BadRequest("Post cannot be null.");
+                return BadRequest(Result<Post>.Failure("Post cannot be null."));
             }
             Post Post = postDto;
             var createdPost = await _postService.CreateAsync(Post);
             if (createdPost == null)
             {
-                return BadRequest("Failed to create postDto.");
+                return BadRequest(Result<Post>.Failure("erro ao criar post!"));
             }
-            //return CreatedAtAction(nameof(Get), new { id = createdPost.PostId }, createdPost);
-            return Ok(createdPost);
+            return CreatedAtAction(nameof(Get), new { id = createdPost.Id }, createdPost);
+            
         }
 
         [HttpPut("{id:int}")]

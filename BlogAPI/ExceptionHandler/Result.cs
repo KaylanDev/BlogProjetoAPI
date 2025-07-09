@@ -1,18 +1,22 @@
-﻿namespace Blog.API.ExceptionHandler;
+﻿using Microsoft.AspNetCore.Server.HttpSys;
 
-public class Result
+namespace Blog.API.ExceptionHandler;
+
+public class Result<T>
 {
     public bool IsSuccess { get; }
     public List<string>? ErrorMessage { get; } = new List<string>();
-    public object? Value { get; }
+    public T? Value { get; }
 
-    protected Result(bool isSuccess, string? errorMessage, object? value)
+    protected Result(bool isSuccess, List<string> errorMessage, T? value)
     {
         IsSuccess = isSuccess;
-        if (!string.IsNullOrEmpty(errorMessage)) ErrorMessage.Add(errorMessage);
+        ErrorMessage = errorMessage ?? new List<string>();
         Value = value;
     }
 
-    public static Result Success(object? value = null) => new Result(true, null, value);
-    public static Result Failure(string errorMessage)=> new Result(false, errorMessage, null);
+    public static Result<T> Success(T? value ) => new Result<T>(true, null, value);
+    public static Result<T> Failure(string errorMessage) => new Result<T>(false, new List<string> { errorMessage }, default);
+    public static Result<T> Failure(List<string> errorMessage) => new Result<T>(false, errorMessage , default);
+    
 }

@@ -10,12 +10,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.PortableExecutable;
 using Blog.Application.DTOs.PostsDTOModel;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.Application.Services
 {
     public class PostService : IPostService
     {
         private readonly IPostsRepository _postRepository;
+
 
         public PostService(IPostsRepository postRepository)
         {
@@ -60,9 +62,8 @@ namespace Blog.Application.Services
         public async Task<PostDTO> CreateAsync(PostDTO entity)
         {
             if (entity == null) return null;
-
             Post post = entity;
-            var result = await _postRepository.UpdateAsync(post);
+            var result = await _postRepository.CreateAsync(post);
             return post;
         }
 

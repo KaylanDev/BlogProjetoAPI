@@ -24,25 +24,36 @@ public class PostDTO
 
     public static implicit operator PostDTO(Post post)
     {
-        return new PostDTO
+        PostDTO postDto = new PostDTO
         {
             Id = post.PostId,
             Title = post.Title,
             Content = post.Content,
-            UserId = post.UserId
+            UserId = post.UserId,
+            
         };
+        if (post.ImageUrl != null)
+        {
+            postDto.ImagemUrl = post.ImageUrl;
+        }
+        return postDto;
     }
 
     public static implicit operator Post(PostDTO postDto)
     {
 
-        return new Post
+       Post post = new Post
         {
             PostId = postDto.Id,
             Title = postDto.Title,
             Content = postDto.Content,
             UserId = postDto.UserId
         };
+        if (postDto.ImagemUrl != null )
+        {
+            post.ImageUrl = postDto.ImagemUrl;
+        }
+        return post;
     }
 
 

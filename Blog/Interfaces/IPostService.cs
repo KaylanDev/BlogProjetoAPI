@@ -1,5 +1,6 @@
 ﻿using Blog.Application.DTOs.PostsDTOModel;
 using Blog_Domain.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Blog.Application.Interfaces
         Task<bool> UpdateAsync(PostDTO entity);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle);
+
 
 
     }
