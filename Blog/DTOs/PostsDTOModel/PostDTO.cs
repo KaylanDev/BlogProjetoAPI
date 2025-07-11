@@ -12,7 +12,7 @@ public class PostDTO
     public int Id { get; set; }
     public string Title { get; set; }
     public string Content { get; set; }
-    public string ImagemUrl { get; set; }
+    public string ImageUrl { get; set; }
     public int UserId { get;  set; }
     
 
@@ -34,7 +34,7 @@ public class PostDTO
         };
         if (post.ImageUrl != null)
         {
-            postDto.ImagemUrl = post.ImageUrl;
+            postDto.ImageUrl = post.ImageUrl;
         }
         return postDto;
     }
@@ -49,9 +49,9 @@ public class PostDTO
             Content = postDto.Content,
             UserId = postDto.UserId
         };
-        if (postDto.ImagemUrl != null )
+        if (postDto.ImageUrl != null )
         {
-            post.ImageUrl = postDto.ImagemUrl;
+            post.ImageUrl = postDto.ImageUrl;
         }
         return post;
     }

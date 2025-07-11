@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Uploads\20eded13-46ba-4d83-b415-0d32d52290a5.png" />
+    <None Remove="Uploads\7b79741f-396b-42a6-b831-1216788db1d1.png" />
+    <None Remove="Uploads\d0ee8c78-5481-4270-b35f-050e0c3c40c6.png" />
+    <None Remove="Uploads\e9e63001-304b-4f54-8f3d-6ef36249bf49.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

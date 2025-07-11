@@ -25,7 +25,7 @@ namespace Blog.API.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        private async Task<Result<string>> UploudImg( IFormFile img)
+        private async Task<Result<string>> UploudImg(IFormFile img)
         {
             if (img == null)
             {
@@ -63,7 +63,7 @@ namespace Blog.API.Controllers
 
                 // Constrói a URL para a imagem
                 imageUrl = $"{Request.Scheme}://{Request.Host}/Imagens/{uniqueFileName}";
-                
+
             }
 
 
@@ -73,12 +73,29 @@ namespace Blog.API.Controllers
             return Result<string>.Success(imageUrl);
         }
 
+        private Result<string> UploadDelete(Post post)
+        {
+            if (post == null || string.IsNullOrEmpty(post.ImageUrl))
+            {
+                return Result<string>.Failure("Post ou URL da imagem nao existe");
+            }
+            string imgUrl = post.ImageUrl;
+
+            // Extrai o nome do arquivo da URL
+            string fileName = Path.GetFileName(new Uri(imgUrl).AbsolutePath); // resultado: "becff3ab-4e0d-4ce7-8cba-d093c231e302.png"
+
+
+            var img = Path.Combine(_hostingEnvironment.ContentRootPath, "Uploads", fileName);
 
 
 
-
-
-
+            if (System.IO.File.Exists(img))
+            {
+                System.IO.File.Delete(img);
+                return Result<string>.Success("Imagem deletada com sucesso.");
+            }
+            return Result<string>.Failure("Imagem nao encontrada para deletar.");
+        }
 
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -119,8 +136,8 @@ namespace Blog.API.Controllers
             return Ok(posts);
         }
 
-        [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile img)
+        [HttpPost("UploadCreate")]
+        public async Task<IActionResult> UploadCreate(IFormFile img)
         {
             if (img == null)
             {
@@ -128,10 +145,70 @@ namespace Blog.API.Controllers
             }
             var result = await UploudImg(img);
 
-            return result.IsSuccess 
-                ? Ok(result) 
+            return result.IsSuccess
+                ? Ok(result)
                 : BadRequest(result);
         }
+
+        [HttpDelete]
+        [Route("UploadDelete/{id:int}")]
+        public async Task<IActionResult> UploadDelete(int id)
+        {
+            if (id <= 0) return BadRequest("Id invalido");
+            var post = await _postService.GetByIdAsync(id);
+            if (post == null)
+            {
+                return NotFound($"Post with id {id} not found.");
+            }
+            if (!string.IsNullOrEmpty(post.ImageUrl))
+            {
+                var result = UploadDelete(post);
+                if (!result.IsSuccess)
+                {
+                    return BadRequest(result);
+                }
+            }
+
+            post.ImageUrl = null; // Clear the image URL after deletion
+            await _postService.UpdateAsync(post);
+            return Ok(Result<Post>.Success(post));
+        }
+
+        [HttpPut]
+        [Route("UploadUpdate/{id:int}")]
+        public async Task<IActionResult> UploadUpdate(int id, IFormFile img)
+        {
+            if (id <= 0) return BadRequest("Id invalido");
+            if (img == null)
+            {
+                return BadRequest(Result<Post>.Failure("a imagem n pode ser nula!"));
+            }
+            var post = await _postService.GetByIdAsync(id);
+            if (post == null)
+            {
+                return NotFound($"Post with id {id} not found.");
+            }
+            if (!string.IsNullOrEmpty(post.ImageUrl))
+            {
+                UploadDelete(post);
+            }
+        
+            var result = await UploudImg(img);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+             
+
+            post.ImageUrl = result.Value;
+            var updatedPost = await _postService.UpdateAsync(post);
+            if (!updatedPost)
+            {
+                return BadRequest(Result<Post>.Failure("Erro ao atualizar post!"));
+            }
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(PostDTO postDto)
         {
@@ -146,7 +223,7 @@ namespace Blog.API.Controllers
                 return BadRequest(Result<Post>.Failure("erro ao criar post!"));
             }
             return CreatedAtAction(nameof(Get), new { id = createdPost.Id }, createdPost);
-            
+
         }
 
         [HttpPut("{id:int}")]
