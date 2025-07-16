@@ -38,6 +38,9 @@ namespace Blog.Infrastruture.Configuration
                 PasswordHash = "AHIjjUiOw1IVwAau3589yIYYrlMf6mjnvu98HDhs36Kx7ZwEqYnCw72xklLO4yZ1gw==" //senha é teste
 
             });
+            builder.HasOne(r => r.RefreshToken)
+                .WithOne(r => r.User)
+                .HasForeignKey<RefreshToken>(r => r.UserId);
 
         }
     }
