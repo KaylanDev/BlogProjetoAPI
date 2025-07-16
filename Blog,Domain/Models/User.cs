@@ -16,7 +16,9 @@ public class User
     public string Username { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
+    public virtual RefreshToken RefreshToken { get; set; }
     public IEnumerable<Post>?Posts { get; set; }
     public IEnumerable<Coment>? Coments { get; set; }
+
 
 }
