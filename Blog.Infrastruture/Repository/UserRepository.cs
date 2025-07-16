@@ -30,5 +30,31 @@ namespace Blog.Infrastruture.Repository
                 .FirstOrDefaultAsync();
             return user;
         }
+
+        public async Task SaveRefreshTokenAsync(int userId, string token, DateTime expiration)
+        {
+            var refreshToken = new RefreshToken
+            {
+                UserId = userId,
+                Token = token,
+                Expiration = expiration,
+                IsRevoked = false
+            };
+            await _context.RefreshToken.AddAsync(refreshToken);
+        }
+
+        public async Task<int?> ValidateRefreshTokenAsync(string token)
+        {
+            var refreshToken = await _context.RefreshToken
+              .FirstOrDefaultAsync(r => r.Token == token);
+
+            if (refreshToken == null)
+                return null;
+
+            if (refreshToken.Expiration < DateTime.UtcNow || refreshToken.IsRevoked)
+                return null;
+
+            return refreshToken.UserId;
+        }
     }
 }

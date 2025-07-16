@@ -2,8 +2,10 @@
 using Blog.Application.Services;
 using Blog.Infrastruture.Context;
 using Blog.Infrastruture.Repository;
+using Blog.Infrastruture.Services;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
+using Blog_Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +33,7 @@ public static class  DependencyInjetion
         // registra o Comment
         services.AddScoped<IComentsRepository,ComentsRepository>();
         services.AddScoped<IComentsService,ComentsService>();
+        services.AddSingleton<ITokenService, TokenService>();
 
         return services;
     }
