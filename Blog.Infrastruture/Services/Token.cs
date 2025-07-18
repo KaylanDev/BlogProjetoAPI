@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace Blog.Infrastruture.Services
 {
-    public class TokenService : ITokenService
+    public class Token : IToken
     {
         private readonly IConfiguration _configuration; 
 
-        public TokenService(IConfiguration configuration)
+        public Token(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -32,7 +33,12 @@ namespace Blog.Infrastruture.Services
              };
 
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Secretkey"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("JWT").GetValue<string>("Secretkey")));
+            if (key is null)
+            {
+                throw new Exception("JWT Secret key is not configured.");
+            }
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

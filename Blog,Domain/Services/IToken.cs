@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Blog_Domain.Services
 {
-   public  interface ITokenService
+   public  interface IToken
     {
         public string GenerateJwtToken(User user);
         public string GenerateRefreshToken();

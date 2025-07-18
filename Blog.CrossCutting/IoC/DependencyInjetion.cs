@@ -32,8 +32,9 @@ public static class  DependencyInjetion
         services.AddScoped<IPostService, PostService>();
         // registra o Comment
         services.AddScoped<IComentsRepository,ComentsRepository>();
-        services.AddScoped<IComentsService,ComentsService>();
-        services.AddSingleton<ITokenService, TokenService>();
+        services.AddScoped<IComentsService, ComentsService>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<IToken, Token>();
 
         return services;
     }
