@@ -34,7 +34,7 @@ namespace TesteXunit.ComentTeste
             //Assert.IsAssignableFrom<IEnumerable<Blog.Application.DTOs.ComentsDTO>>(okResult.Value);
 
 
-            result.Should().Be(StatusCodes.Status200OK);
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]

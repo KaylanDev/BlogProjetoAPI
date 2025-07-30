@@ -32,7 +32,7 @@ namespace TesteXunit.TokenTestexUnit
             // Assert
             Assert.NotNull(token);
             Assert.IsType<string>(token);
-            Assert.NotEmpty(token);
+            Assert.NotEmpty(token.Value);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace TesteXunit.TokenTestexUnit
             //assert
             Assert.NotNull(refreshToken);
             Assert.IsType<string>(refreshToken);
-            Assert.NotEmpty(refreshToken);
+            Assert.NotEmpty(refreshToken.Value);
         }
 
         public void Dispose()

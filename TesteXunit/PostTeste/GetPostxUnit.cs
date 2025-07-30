@@ -1,4 +1,5 @@
-﻿using Blog.Application.Interfaces;
+﻿using Blog.Application.DTOs.PostsDTOModel;
+using Blog.Application.Interfaces;
 using Blog.Application.Services;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
@@ -45,6 +46,7 @@ public class GetPostxUnit : IClassFixture<PostxUnit>
        var result = await _postService.CreateAsync(Post);
         // Assert
         result.Should().NotBeNull();
-        
+        result.Should().BeOfType<PostDTO>();
+
     }
 }

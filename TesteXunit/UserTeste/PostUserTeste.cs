@@ -44,5 +44,7 @@ namespace TesteXunit.UserTeste
             result.Should().NotBeNull();
             result.Should().BeOfType<OkObjectResult>();
         }
+
+
     }
 }
