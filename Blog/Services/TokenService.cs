@@ -2,6 +2,7 @@
 using Blog.Application.Interfaces;
 using Blog_Domain.Models;
 using Blog_Domain.Services;
+using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,14 @@ namespace Blog.Application.Services
             _token = token;
         }
 
-        public string GenerateJwtToken(UserDTO userdto)
+        public Result<string> GenerateJwtToken(UserDTO userdto)
         {
             User user = userdto;
 
             return _token.GenerateJwtToken(user);
         }
 
-        public string GenerateRefreshToken()
+        public Result<string> GenerateRefreshToken()
         {
             return _token.GenerateRefreshToken();
         }

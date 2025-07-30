@@ -26,8 +26,16 @@ namespace Blog.Infrastruture.Configuration
                 .HasDefaultValue(false); // Define o valor padrão como false
             builder.HasOne(x => x.User)
                 .WithOne(u => u.RefreshToken) // Assumindo que a propriedade de navegação é RefreshTokens
-                .HasForeignKey<User>(x => x.UserId)
+                .HasForeignKey<RefreshToken>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade); // Se um usuário for deletado, seus tokens também serão deletados
+            builder.HasData(new RefreshToken
+            {
+                Id = 1,
+                Expiration = new DateTime(2025, 7, 29, 12, 0, 0, DateTimeKind.Utc), // Valor fixo
+                IsRevoked = false,
+                Token ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsImVtYWlsIjoidGVzdGVAdGVzdGUuY29tIiwiZXhwIjoxNzUzODM4MDg4LCJpc3MiOiJUZXN0SXNzdWVyIiwiYXVkIjoiVGVzdEF1ZGllbmNlIn0.Xv3JXQ9s1QjvPTe_AmnFldqdrzTGkd1UKnvfUU5jRfU",
+                UserId = 1
+            });
         }
     }
 }

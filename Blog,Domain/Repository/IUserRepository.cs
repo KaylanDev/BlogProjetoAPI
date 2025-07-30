@@ -11,8 +11,6 @@ namespace Blog_Domain.Repository
     {
         public Task<User> GetByNameAsync(string name);
         public Task<User> GetPostsAndComents();
-        public  Task SaveRefreshTokenAsync(int userId, string token, DateTime expiration);
-
-        public Task<int?> ValidateRefreshTokenAsync(string token);
+       
     }
 }

@@ -26,7 +26,7 @@ namespace Blog.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var users = await _userService.GetAsync();
+            var users = await _userService.GetAsyncAsync();
             if (users is null || users.Count() == 0)
             {
                 return BadRequest("N ha usuarios!");
@@ -89,18 +89,7 @@ namespace Blog.API.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(UserDTO userDto,string password)
-        {    
-           
-            if (userDto == null || string.IsNullOrEmpty(password))
-            {
-                return BadRequest("dados invalidos");
-            }
-            
-            var createdUser = await _userService.CreateAsync(userDto,password);
-            return CreatedAtAction(nameof(GetById), new { id = createdUser.UserId }, createdUser);
-        }
+   
         [HttpPut("{password}")]
         public async Task<IActionResult> Update(string password,UserDTO userDto)
         {

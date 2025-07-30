@@ -1,5 +1,5 @@
 ﻿using Blog.Application.DTOs.UserModel;
-using Blog_Domain.Services;
+using Blog_Domain.Models;
 using FluentResults;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Blog.Application.Interfaces
 {
-    public interface ITokenService 
+    public interface IAuthService
     {
-        public Result<string> GenerateJwtToken(UserDTO user);
-        public Result<string> GenerateRefreshToken();
+        public Task<Result<string>> Login(string username, string password);
+        public Task<Result<string>> Register(UserDTORegister user);
     }
 }

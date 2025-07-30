@@ -33,7 +33,7 @@ namespace Blog.Infrastruture.Services
              };
 
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("JWT").GetValue<string>("Secretkey")));
             if (key is null)
             {

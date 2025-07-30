@@ -24,14 +24,27 @@ public class UserService : IUserService
     }
 
 
-    public async Task<IEnumerable<UserDTO>> GetAsync()
+    public async Task<IEnumerable<UserDTO>> GetAsyncAsync()
     {
         var users = await _userManager.GetAsync();
         var userDTO = users.UserForDTOLIst();
         
         return userDTO;
     }
-
+    public async Task<UserDTO> GetByNameAsyncAsync(string name)
+    {
+        if(string.IsNullOrEmpty(name))
+        {
+            return null; // or throw an exception if preferred
+        }
+        var user = await _userManager.GetByNameAsync(name);
+        
+        if (user == null)
+        {
+            return null; // or throw an exception if preferred
+        }
+        return user;
+    }
     public async Task<UserDTO> GetByIdAsync(int id)
     {
         var user = await _userManager.GetByIdAsync(id);
@@ -57,7 +70,7 @@ public class UserService : IUserService
 
         return user; 
     }
-    public async Task<UserDTO> CreateAsync(UserDTO UserDTO,string password)
+    public async Task<User> CreateAsync(UserDTO UserDTO,string password)
     {
         User user = UserDTO;
        user.PasswordHash = HashPassword(password);
@@ -68,9 +81,10 @@ public class UserService : IUserService
             throw new Exception("Usuário já existe.");
         }
         // Cria o usuário 
-        var result =  await _userManager.CreateAsync(user);
+    
 
-        return result;
+
+        return user;
     }
 
     public async Task<bool> DeleteAsync(string name,string password)
