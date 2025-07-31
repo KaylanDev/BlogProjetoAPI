@@ -33,6 +33,9 @@ public static class  DependencyInjetion
         // registra o Comment
         services.AddScoped<IComentsRepository,ComentsRepository>();
         services.AddScoped<IComentsService, ComentsService>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
+        services.AddScoped<IAuthService, AuthService>();
+
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IToken, Token>();
 
