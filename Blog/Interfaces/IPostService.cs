@@ -14,8 +14,9 @@ namespace Blog.Application.Interfaces
         Task<IEnumerable<PostDTO>> GetAsync();
         Task<PostDTO> GetByIdAsync(int id);
         Task<PostDTO> CreateAsync(PostDTO entity);
-        Task<bool> UpdateAsync(PostDTO entity);
-        Task<bool> DeleteAsync(int id);
+        
+        UpdateAsync(PostDTO entity);
+        Task<Result> DeleteAsync(int id);
         Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle);
 
 

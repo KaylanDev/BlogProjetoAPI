@@ -14,8 +14,8 @@ namespace Blog.Application.Interfaces
         Task<IEnumerable<ComentsDTO>> GetAsync();
         Task<ComentsDTO> GetByIdAsync(int id);
         Task<ComentsDTO> CreateAsync(ComentsDTO entity);
-        Task<bool> UpdateAsync(ComentsDTO entity);
-        Task<bool> DeleteAsync(int id);
+        Task<Result<bool>> UpdateAsync(ComentsDTO entity);
+        Task<Result<bool>> DeleteAsync(int id);
 
 
     }

@@ -63,24 +63,24 @@ namespace Blog.Application.Services
         public async Task<Result<string>> Register(UserDTORegister userDto)
         {
             if (userDto is null) return Result.Fail("User nao pode ser null");
-            var existingUser = await _usersService.GetByNameAsyncAsync(userDto.Username);
+            var existingUser = await _usersService.GetByNameAsync(userDto.Username);
 
             if (existingUser != null) return Result.Fail("User ja existe");
             if (userDto.Password != userDto.ConfirmPassword) return Result.Fail("senhas divergentes!");
             
-            var createdUser = await _usersService.CreateAsync(userDto, userDto.Password);
+            var createdUser = await _usersService.GeneratorPasswordHash(userDto, userDto.Password);
             if (createdUser is null)
             {
                 return Result.Fail("Failed to create user");
             }
-            var token = _tokenService.GenerateJwtToken(createdUser);
+            var token = _tokenService.GenerateJwtToken(createdUser.Value);
             var refreshhToken = _tokenService.GenerateRefreshToken();
             
             if (token.IsFailed)return Result.Fail("Failed to generate token");
             if(refreshhToken.IsFailed) return Result.Fail("Failed to generate refresh token");
 
             // Salva o refresh token no banco de dados
-            await _authRepository.CreateUser(createdUser, refreshhToken.Value);
+            await _authRepository.CreateUser(createdUser.Value, refreshhToken.Value);
 
             return token.Value;
         }

@@ -39,7 +39,7 @@ namespace Blog.Application.Services
             var result = await _comentsRepository.CreateAsync(coment);
             return result;
         }
-  public async Task<bool> UpdateAsync(ComentsDTO entity)
+  public async Task<Result<bool>> UpdateAsync(ComentsDTO entity)
         {
             if (entity == null) return false;
             var existingComent = await _comentsRepository.GetByIdAsync(entity.ComentId);
@@ -48,7 +48,7 @@ namespace Blog.Application.Services
             var result = await _comentsRepository.UpdateAsync(existingComent);
             return result;
         }
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Result<bool>> DeleteAsync(int id)
         {
             if (id <= 0) return false;
             var existingComent = await _comentsRepository.GetByIdAsync(id);

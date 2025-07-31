@@ -20,7 +20,7 @@ namespace Blog.Infrastruture.Repository
 
         public async Task<User> CreateUser(User user, string token)
         {
-       var userdsjkdsa = await CreateUseradfjkasdjksa(user);
+       var userdsjkdsa = await createUserSalving(user);
             
             var refreshToken = new RefreshToken
             {
@@ -70,7 +70,7 @@ namespace Blog.Infrastruture.Repository
         {
             return await _context.RefreshToken.FirstOrDefaultAsync(u => u.UserId == userId);
         }
-        private async Task<User> CreateUseradfjkasdjksa(User user)
+        private async Task<User> createUserSalving(User user)
         {
             var result = await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();

@@ -49,7 +49,7 @@ namespace Blog.Application.Services
             return postDTOs;
         }
 
-        public async Task<bool> UpdateAsync(PostDTO entity)
+        public async Task<Result<bool>> UpdateAsync(PostDTO entity)
         {
             if (entity == null) return false;
             var existingPost = await _postRepository.GetByIdAsync(entity.Id);
@@ -67,7 +67,7 @@ namespace Blog.Application.Services
             return post;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<Result<bool>> DeleteAsync(int id)
         {
             if (id <= 0) return false;
             var existingPost = await _postRepository.GetByIdAsync(id);
