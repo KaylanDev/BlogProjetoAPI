@@ -27,11 +27,11 @@ namespace Blog.API.Controllers
         public async Task<IActionResult> Get()
         {
             var users = await _userService.GetAsyncAsync();
-            if (users is null || users.Count() == 0)
+            if (users.Value is null || users.Value.Count() == 0)
             {
                 return BadRequest("N ha usuarios!");
             }
-            return Ok(users);
+            return Ok(users.Value);
         }
         
         [HttpGet("Paged_List_Post")]
@@ -42,7 +42,7 @@ namespace Blog.API.Controllers
             var produtosQuery = await _userService.GetPostsAndComents();
 
             var pagedProdutos = PagedList<PostDTOComents>.ToPagedList(
-                produtosQuery.Posts,
+                produtosQuery.Value.Posts,
                 paginationParams.PageNumber,
                 paginationParams.PageSize
             );
@@ -75,10 +75,10 @@ namespace Blog.API.Controllers
             {
                 return NotFound("Usuario n encontrado");
             }
-            return Ok(user);
+            return Ok(user.Value);
         }
 
-        [HttpGet("Posts")]
+        [HttpGet("PostsAndComents")]
         public async Task<IActionResult> GetPostsAndComents()
         {
             var user = await _userService.GetPostsAndComents();
@@ -86,8 +86,9 @@ namespace Blog.API.Controllers
             {
                 return NotFound("Usuario n encontrado");
             }
-            return Ok(user);
+            return Ok(user.Value);
         }
+
 
    
         [HttpPut("{password}")]
@@ -102,7 +103,7 @@ namespace Blog.API.Controllers
 
             if (updatedUser is null) return BadRequest("senha invalida!");
             
-            return Ok(updatedUser);
+            return Ok(updatedUser.Value);
         }
         [HttpDelete]
         public async Task<IActionResult> Delete(string username, string password)
@@ -112,7 +113,7 @@ namespace Blog.API.Controllers
                 return BadRequest("Dados invalidos");
             }
             var deletedUser = await _userService.DeleteAsync(username,password);
-            if (!deletedUser) return BadRequest("Senha invalida");
+            if (deletedUser.IsFailed) return BadRequest("Senha invalida");
             return Ok($"Usuario {username} deletado com sucesso!");
         }
     }

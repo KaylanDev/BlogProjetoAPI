@@ -202,7 +202,7 @@ namespace Blog.API.Controllers
 
             post.ImageUrl = result.Value;
             var updatedPost = await _postService.UpdateAsync(post);
-            if (!updatedPost)
+            if (updatedPost.IsFailed)
             {
                 return BadRequest(Result<Post>.Failure("Erro ao atualizar post!"));
             }
@@ -234,7 +234,7 @@ namespace Blog.API.Controllers
                 return BadRequest("Dados invalidos ou Id invalido");
             }
             var updated = await _postService.UpdateAsync(postDto);
-            if (!updated)
+            if (updated.IsFailed)
             {
                 return BadRequest("ocorreu um erro ao salvar alteracoes");
             }
@@ -245,7 +245,7 @@ namespace Blog.API.Controllers
         {
             if (id <= 0) return BadRequest("Id invalido");
             var deleted = await _postService.DeleteAsync(id);
-            if (!deleted)
+            if (deleted.IsFailed)
             {
                 return NotFound($"Post with id {id} not found.");
             }

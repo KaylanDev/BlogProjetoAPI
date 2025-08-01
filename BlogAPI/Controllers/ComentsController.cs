@@ -62,7 +62,7 @@ public class ComentsController : ControllerBase
             return BadRequest("Dados invalidos");
         }
         var updated = await _comentsService.UpdateAsync(comentDto);
-        if (!updated)
+        if (!updated.Value)
         {
             return BadRequest("falha ao atualizar comentario.");
         }
@@ -74,7 +74,7 @@ public class ComentsController : ControllerBase
     {
         if (id <= 0) return BadRequest("Id invalido");
         var deleted = await _comentsService.DeleteAsync(id);
-        if (!deleted)
+        if (deleted.IsFailed)
         {
             return NotFound($"Comentario com id {id} nao encontrado.");
         }

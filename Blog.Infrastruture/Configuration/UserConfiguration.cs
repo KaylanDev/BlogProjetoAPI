@@ -38,7 +38,16 @@ namespace Blog.Infrastruture.Configuration
                 PasswordHash = "AHIjjUiOw1IVwAau3589yIYYrlMf6mjnvu98HDhs36Kx7ZwEqYnCw72xklLO4yZ1gw==" //senha é "teste"
 
             });
-            
+
+            builder.HasData(new User
+            {
+                UserId = 2,
+                Username = "admin2",
+                Email = "teste2@teste.com",
+                PasswordHash = "AHIjjUiOw1IVwAau3589yIYYrlMf6mjnvu98HDhs36Kx7ZwEqYnCw72xklLO4yZ1gw==" //senha é "teste"
+
+            });
+
             builder.HasOne(r => r.RefreshToken)
                 .WithOne(r => r.User)
                 .HasForeignKey<RefreshToken>(r => r.UserId);
