@@ -30,7 +30,7 @@ public class UserService : IUserService
     {
         var users = await _userManager.GetAsync();
         // Verifica se a lista de usuários é nula ou vazia
-        if (users is null)   return Result.Fail("No users found.");
+        if (users is null)   return Result.Fail("users no  found.");
         
         var userDTO = users.UserForDTOLIst();
         

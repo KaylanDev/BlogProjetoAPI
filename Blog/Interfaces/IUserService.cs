@@ -16,8 +16,7 @@ public interface IUserService
     public Task<Result<UserDTO>> GetByIdAsync(int id);
     public Task<Result<User>> GeneratorPasswordHash(UserDTO userDto,string password);
    public  Task<Result<UserDTO>> UpdateAsync(UserDTO userDto,string password);
-   public  
-        DeleteAsync(string username,string password);
+   public  Task<Result> DeleteAsync(string username,string password);
     public Task<Result<UserDTOPosts>> GetPostsAndComents();
    
 

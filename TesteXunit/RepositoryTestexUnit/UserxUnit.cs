@@ -30,7 +30,7 @@ namespace TesteXunit.RepositoryTestexUnit
         {
             Context = new AppDbContext(contextoptions);
             Context.Database.EnsureDeleted(); // Limpa o banco de dados antes de cada teste
-            Context.Database.EnsureCreated(); // Cria o banco de dados antes de cada teste
+            Context.Database.Migrate(); // Cria o banco de dados antes de cada teste
             _repository = new UserRepository(Context);
         }
 

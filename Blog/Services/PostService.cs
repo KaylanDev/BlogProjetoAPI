@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Reflection.PortableExecutable;
 using Blog.Application.DTOs.PostsDTOModel;
 using Microsoft.AspNetCore.Http;
+using FluentResults;
 
 namespace Blog.Application.Services
 {

@@ -1,5 +1,6 @@
 ﻿using Blog.Application.DTOs.PostsDTOModel;
 using Blog_Domain.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,9 @@ namespace Blog.Application.Interfaces
         Task<IEnumerable<PostDTO>> GetAsync();
         Task<PostDTO> GetByIdAsync(int id);
         Task<PostDTO> CreateAsync(PostDTO entity);
-        
-        UpdateAsync(PostDTO entity);
-        Task<Result> DeleteAsync(int id);
+
+        Task<Result<bool>> UpdateAsync(PostDTO entity);
+        Task<Result<bool>> DeleteAsync(int id);
         Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle);
 
 
