@@ -2,6 +2,7 @@
 using Blog.Application.DTOs.PostsDTOModel;
 using Blog.Application.Interfaces;
 using Blog_Domain.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ namespace Blog.API.Controllers
         {
             if (img == null)
             {
-                return Result<string>.Failure("Imagem não pode ser nula.");
+                return Result.Fail("Imagem não pode ser nula.");
             }
 
             string imageUrl = string.Empty;
@@ -42,7 +43,7 @@ namespace Blog.API.Controllers
 
                 if (!allowedExtensions.Contains(fileExtension))
                 {
-                    return Result<string>.Failure("Tipo de arquivo não permitido. Apenas JPG, JPEG, PNG e GIF são aceitos.");
+                    return Result.Fail("Tipo de arquivo não permitido. Apenas JPG, JPEG, PNG e GIF são aceitos.");
                 }
 
                 // Garante que a pasta de uploads exista
@@ -66,18 +67,14 @@ namespace Blog.API.Controllers
 
             }
 
-
-
-
-
-            return Result<string>.Success(imageUrl);
+            return Result.Ok(imageUrl);
         }
 
         private Result<string> UploadDelete(Post post)
         {
             if (post == null || string.IsNullOrEmpty(post.ImageUrl))
             {
-                return Result<string>.Failure("Post ou URL da imagem nao existe");
+                return Result.Fail("Post ou URL da imagem nao existe");
             }
             string imgUrl = post.ImageUrl;
 
@@ -92,15 +89,16 @@ namespace Blog.API.Controllers
             if (System.IO.File.Exists(img))
             {
                 System.IO.File.Delete(img);
-                return Result<string>.Success("Imagem deletada com sucesso.");
+                return Result.Ok("Imagem deletada com sucesso.");
             }
-            return Result<string>.Failure("Imagem nao encontrada para deletar.");
+            return Result.Fail("Imagem nao encontrada para deletar.");
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var posts = await _postService.GetAsync();
+            var result = await _postService.GetAsync();
+            var posts =  result.Value;
             if (posts == null || !posts.Any())
             {
                 return NotFound("No posts found.");
@@ -117,7 +115,7 @@ namespace Blog.API.Controllers
             {
                 return NotFound($"Post with id {id} not found.");
             }
-            PostDTO postDto = post;
+            PostDTO postDto = post.Value;
             return Ok(postDto);
         }
 
@@ -128,7 +126,8 @@ namespace Blog.API.Controllers
             {
                 return BadRequest("O titulo n pode estar vazio");
             }
-            var posts = await _postService.GetPostByTittle(tittle);
+            var result = await _postService.GetPostByTittle(tittle);
+            var posts = result.Value;
             if (posts == null || !posts.Any())
             {
                 return NotFound($"Post com o titulo '{tittle}' nao encontrado.");
@@ -141,7 +140,7 @@ namespace Blog.API.Controllers
         {
             if (img == null)
             {
-                return BadRequest(Result<Post>.Failure("a imagem n pode ser nula!"));
+                return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
             var result = await UploudImg(img);
 
@@ -155,23 +154,24 @@ namespace Blog.API.Controllers
         public async Task<IActionResult> UploadDelete(int id)
         {
             if (id <= 0) return BadRequest("Id invalido");
-            var post = await _postService.GetByIdAsync(id);
+            var result = await _postService.GetByIdAsync(id);
+            var post = result.Value;
             if (post == null)
             {
                 return NotFound($"Post with id {id} not found.");
             }
             if (!string.IsNullOrEmpty(post.ImageUrl))
             {
-                var result = UploadDelete(post);
+                var resultDelete = UploadDelete(post);
                 if (!result.IsSuccess)
                 {
-                    return BadRequest(result);
+                    return BadRequest(resultDelete);
                 }
             }
 
             post.ImageUrl = null; // Clear the image URL after deletion
             await _postService.UpdateAsync(post);
-            return Ok(Result<Post>.Success(post));
+            return Ok(Result.Ok(post));
         }
 
         [HttpPut]
@@ -181,16 +181,16 @@ namespace Blog.API.Controllers
             if (id <= 0) return BadRequest("Id invalido");
             if (img == null)
             {
-                return BadRequest(Result<Post>.Failure("a imagem n pode ser nula!"));
+                return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
             var post = await _postService.GetByIdAsync(id);
             if (post == null)
             {
                 return NotFound($"Post with id {id} not found.");
             }
-            if (!string.IsNullOrEmpty(post.ImageUrl))
+            if (!string.IsNullOrEmpty(post.Value.ImageUrl))
             {
-                UploadDelete(post);
+                UploadDelete(post.Value);
             }
         
             var result = await UploudImg(img);
@@ -200,11 +200,11 @@ namespace Blog.API.Controllers
             }
              
 
-            post.ImageUrl = result.Value;
-            var updatedPost = await _postService.UpdateAsync(post);
+            post.Value.ImageUrl = result.Value;
+            var updatedPost = await _postService.UpdateAsync(post.Value);
             if (updatedPost.IsFailed)
             {
-                return BadRequest(Result<Post>.Failure("Erro ao atualizar post!"));
+                return BadRequest(Result.Fail("Erro ao atualizar post!"));
             }
             return Ok(result);
         }
@@ -214,15 +214,15 @@ namespace Blog.API.Controllers
         {
             if (postDto == null)
             {
-                return BadRequest(Result<Post>.Failure("Post cannot be null."));
+                return BadRequest(Result.Fail("Post cannot be null."));
             }
             Post Post = postDto;
             var createdPost = await _postService.CreateAsync(Post);
             if (createdPost == null)
             {
-                return BadRequest(Result<Post>.Failure("erro ao criar post!"));
+                return BadRequest(Result.Fail("erro ao criar post!"));
             }
-            return CreatedAtAction(nameof(Get), new { id = createdPost.Id }, createdPost);
+            return CreatedAtAction(nameof(Get), new { id = createdPost.Value.Id }, createdPost);
 
         }
 
