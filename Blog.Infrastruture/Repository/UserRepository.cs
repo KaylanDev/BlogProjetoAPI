@@ -31,6 +31,13 @@ namespace Blog.Infrastruture.Repository
             return user;
         }
 
-      
+        public override async Task<bool> DeleteAsync(int id)
+        {
+            _context.Users.Remove(await _context.Users.FindAsync(id));
+            _context.Coments.RemoveRange(_context.Coments.Where(c => c.UserId == id));
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
     }
 }
