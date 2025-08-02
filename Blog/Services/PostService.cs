@@ -37,7 +37,7 @@ namespace Blog.Application.Services
         public async Task<Result<PostDTO>> GetByIdAsync(int id)
         {
             var post = await _postRepository.GetByIdAsync(id);
-            if (post == null) Result.Fail("Posts Not found");
+            if (post == null) return Result.Fail("Posts Not found");
             PostDTO postDTO = post;
             return Result.Ok(postDTO);
 
@@ -46,7 +46,7 @@ namespace Blog.Application.Services
         public async Task<Result<IEnumerable<PostDTO>>> GetPostByTittle(string tittle)
         {
             var posts = await _postRepository.GetPostByTittleAsync(tittle);
-            if (posts == null) return Result.Fail("N foi encontrado Posts com esse titulo");
+            if (posts == null || posts.Count() == 0) return Result.Fail("N foi encontrado Posts com esse titulo");
             var postDTOs = posts.PostsForDTOLIst();
             return Result.Ok(postDTOs);
         }
@@ -76,7 +76,7 @@ namespace Blog.Application.Services
         {
             var existingPost = await _postRepository.GetByIdAsync(id);
             if (existingPost == null) return Result.Fail("Post not found");
-            var result = await _postRepository.DeleteAsync(existingPost);
+            var result = await _postRepository.DeleteAsync(id);
             if (!result) return Result.Fail("Failed to delete post");
             return Result.Ok();
         }

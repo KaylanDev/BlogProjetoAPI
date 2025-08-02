@@ -65,11 +65,11 @@ namespace Blog.Application.Services
             if (userDto is null) return Result.Fail("User nao pode ser null");
             var existingUser = await _usersService.GetByNameAsync(userDto.Username);
 
-            if (existingUser != null) return Result.Fail("User ja existe");
+            if (existingUser.IsSuccess) return Result.Fail("User ja existe");
             if (userDto.Password != userDto.ConfirmPassword) return Result.Fail("senhas divergentes!");
             
             var createdUser = await _usersService.GeneratorPasswordHash(userDto, userDto.Password);
-            if (createdUser is null)
+            if (createdUser.IsFailed)
             {
                 return Result.Fail("Failed to create user");
             }

@@ -94,7 +94,7 @@ public class UserService : IUserService
             return Result.Fail("Senha invalida!");
         }
 
-        var result = await _userManager.DeleteAsync(user);
+        var result = await _userManager.DeleteAsync(user.UserId);
         if (!result)
         {
             return Result.Fail("ocorreu um erro ao deletar usuario!");

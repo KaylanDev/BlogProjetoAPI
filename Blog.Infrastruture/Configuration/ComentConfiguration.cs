@@ -19,13 +19,14 @@ namespace Blog.Infrastruture.Configuration
                 .HasMaxLength(1000);
             builder.HasOne(c => c.User)
                 .WithMany(p => p.Coments)
-                .HasForeignKey(c => c.UserId);
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
                 
 
             builder.HasOne(c => c.Post)
                 .WithMany(p => p.Coments)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasData(new Coment
             {

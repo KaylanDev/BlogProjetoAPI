@@ -53,7 +53,7 @@ namespace Blog.Application.Services
         {
             if (id <= 0) return false;
             var existingComent = await _comentsRepository.GetByIdAsync(id);
-            var result = await _comentsRepository.DeleteAsync(existingComent);
+            var result = await _comentsRepository.DeleteAsync(id);
             return result;
         }
 
