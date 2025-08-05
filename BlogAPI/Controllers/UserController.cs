@@ -9,11 +9,13 @@ using Blog.Application.DTOs.UserModel;
 using Blog.Application.DTOs;
 using Blog_Domain.Models;
 using Blog.Application.DTOs.PostsDTOModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
