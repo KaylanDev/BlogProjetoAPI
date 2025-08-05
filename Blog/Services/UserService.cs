@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using Microsoft.AspNet.Identity;
 using Blog.Application.DTOs.UserModel;
+using FluentResults;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Blog.Application.Services;
 
@@ -24,85 +26,81 @@ public class UserService : IUserService
     }
 
 
-    public async Task<IEnumerable<UserDTO>> GetAsyncAsync()
+    public async Task<Result<IEnumerable<UserDTO>>> GetAsyncAsync()
     {
         var users = await _userManager.GetAsync();
+        // Verifica se a lista de usuários é nula ou vazia
+        if (users is null)   return Result.Fail("users no  found.");
+        
         var userDTO = users.UserForDTOLIst();
         
-        return userDTO;
+        return Result.Ok(userDTO);
     }
-    public async Task<UserDTO> GetByNameAsyncAsync(string name)
+    public async Task<Result<UserDTO>> GetByNameAsync(string name)
     {
         if(string.IsNullOrEmpty(name))
         {
-            return null; // or throw an exception if preferred
+            return Result.Fail("Name nao pode ser nulo!"); 
         }
         var user = await _userManager.GetByNameAsync(name);
         
         if (user == null)
         {
-            return null; // or throw an exception if preferred
+            return Result.Fail("User not found"); 
         }
-        return user;
+
+        UserDTO userDto = user;
+        return Result.Ok(userDto);
     }
-    public async Task<UserDTO> GetByIdAsync(int id)
+    public async Task<Result<UserDTO>> GetByIdAsync(int id)
     {
         var user = await _userManager.GetByIdAsync(id);
         
         if (user == null)
         {
-            return null; // or throw an exception if preferred
+            return Result.Fail("User not found"); // or throw an exception if preferred
         }
-        return user;
+        UserDTO userDto = user;
+        return Result.Ok(userDto);
     }
-    public async Task<UserDTO> UpdateAsync(UserDTO userDto,string password)
+    public async Task<Result<UserDTO>> UpdateAsync(UserDTO userDto,string password)
     {
         User user = await _userManager.GetByIdAsync(userDto.UserId);
         
         if (!CheckPasswordAsync(user,password))
         {
-            return null;
+            return Result.Fail("Senha invalida!");
         }
         user.Username = userDto.UserName;
         user.Email = userDto.Email;
         await _userManager.UpdateAsync(user);
    
-
-        return user; 
+        UserDTO userDTO = user;
+        return Result.Ok(userDto); 
     }
-    public async Task<User> CreateAsync(UserDTO UserDTO,string password)
+    public async  Task<Result<User>> GeneratorPasswordHash(UserDTO UserDTO,string password)
     {
         User user = UserDTO;
        user.PasswordHash = HashPassword(password);
-        // Verifica se o usuário já existe
-        var existingUser = await _userManager. GetByNameAsync(user.Username);
-        if (existingUser != null)
-        {
-            throw new Exception("Usuário já existe.");
-        }
-        // Cria o usuário 
-    
-
-
-        return user;
+        return Result.Ok(user);
     }
 
-    public async Task<bool> DeleteAsync(string name,string password)
+    public async Task<Result> DeleteAsync(string name,string password)
     {
 
         var user = await _userManager.GetByNameAsync(name);
         if (!(CheckPasswordAsync(user, password)))
         {
-            return false;
+            return Result.Fail("Senha invalida!");
         }
 
-        var result = await _userManager.DeleteAsync(user);
+        var result = await _userManager.DeleteAsync(user.UserId);
         if (!result)
         {
-            throw new Exception("ocorreu um erro ao deletar usuario!");
+            return Result.Fail("ocorreu um erro ao deletar usuario!");
         }
 
-        return true;
+        return Result.Ok();
     }
 
     private bool CheckPasswordAsync(User userveridic, string password)
@@ -119,15 +117,15 @@ public class UserService : IUserService
         return passwordHasher.HashPassword(password);
     }
 
-    public async Task<UserDTOPosts> GetPostsAndComents()
+    public async Task<Result<UserDTOPosts>> GetPostsAndComents()
     {
        var user = await _userManager.GetPostsAndComents();
        
         if (user == null)
         {
-            return null; // or throw an exception if preferred
+            return Result.Fail("Nao existem Posts deste usuario"); // or throw an exception if preferred
         }
         UserDTOPosts userdto = user;
-        return userdto;
+        return Result.Ok(userdto);
     }
 }

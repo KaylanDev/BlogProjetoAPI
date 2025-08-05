@@ -12,6 +12,6 @@ namespace Blog_Domain.Repository
        Task<T> GetByIdAsync(int id);
        Task<T> CreateAsync(T entity);
        Task<bool> UpdateAsync(T entity);
-        Task<bool> DeleteAsync(T entity);
+        Task<bool> DeleteAsync(int id);
     }
 }

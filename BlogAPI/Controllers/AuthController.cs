@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     {
         if (usedto is null)
         {
-            return BadRequest(Result<string>.Failure("preencha os campos!"));
+            return BadRequest(Results<string>.Failure("preencha os campos!"));
         }
         var result = await _authService.Login(usedto.Username,usedto.Password);
         if (result.IsFailed)
@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     {
         if (userDto is null)
         {
-            return BadRequest(Result<string>.Failure("preencha os campos!"));
+            return BadRequest(Results<string>.Failure("preencha os campos!"));
         }
         
         var result = await _authService.Register(userDto);

@@ -1,5 +1,6 @@
 ﻿using Blog.Application.DTOs.PostsDTOModel;
 using Blog_Domain.Models;
+using FluentResults;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -7,18 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blog.Application.Interfaces
+namespace Blog.Application.Interfaces;
+
+public  interface IPostService
 {
- public  interface IPostService
-    {
-        Task<IEnumerable<PostDTO>> GetAsync();
-        Task<PostDTO> GetByIdAsync(int id);
-        Task<PostDTO> CreateAsync(PostDTO entity);
-        Task<bool> UpdateAsync(PostDTO entity);
-        Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<PostDTO>> GetPostByTittle(string tittle);
-
-
-
-    }
+    Task<Result<IEnumerable<PostDTO>>> GetAsync();  
+    Task<Result<IEnumerable<PostDTO>>> GetPostByTittle(string tittle);
+    Task<Result<PostDTO>> GetByIdAsync(int id);
+    Task<Result<PostDTO>> CreateAsync(PostDTO entity);
+    Task<Result> UpdateAsync(PostDTO entity);
+    Task<Result> DeleteAsync(int id);
 }

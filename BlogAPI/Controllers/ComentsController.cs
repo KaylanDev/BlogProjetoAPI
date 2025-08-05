@@ -1,5 +1,6 @@
 ﻿using Blog.Application.DTOs;
 using Blog.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace Blog.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ComentsController : ControllerBase
 {
     private readonly IComentsService _comentsService;
@@ -20,11 +22,11 @@ public class ComentsController : ControllerBase
     public async Task<IActionResult> Get()
     {
         var coments = await _comentsService.GetAsync();
-        if (coments == null || !coments.Any())
+        if (coments == null || !coments.Value.Any())
         {
             return NotFound("No comments found.");
         }
-        return Ok(coments);
+        return Ok(coments.Value);
     }
 
     [HttpGet("{id:int}")]
@@ -36,7 +38,7 @@ public class ComentsController : ControllerBase
         {
             return NotFound($"Comentario com  id {id} nao encontrado.");
         }
-        return Ok(coment);
+        return Ok(coment.Value);
     }
 
     [HttpPost]
@@ -51,7 +53,7 @@ public class ComentsController : ControllerBase
         {
             return BadRequest("falha ao criar comentario.");
         }
-        return CreatedAtAction(nameof(GetById), new { id = createdComent.ComentId }, createdComent);
+        return CreatedAtAction(nameof(GetById), new { id = createdComent.Value.ComentId }, createdComent);
     }
 
     [HttpPut("{id:int}")]
@@ -62,7 +64,7 @@ public class ComentsController : ControllerBase
             return BadRequest("Dados invalidos");
         }
         var updated = await _comentsService.UpdateAsync(comentDto);
-        if (!updated)
+        if (!updated.Value)
         {
             return BadRequest("falha ao atualizar comentario.");
         }
@@ -74,7 +76,7 @@ public class ComentsController : ControllerBase
     {
         if (id <= 0) return BadRequest("Id invalido");
         var deleted = await _comentsService.DeleteAsync(id);
-        if (!deleted)
+        if (deleted.IsFailed)
         {
             return NotFound($"Comentario com id {id} nao encontrado.");
         }

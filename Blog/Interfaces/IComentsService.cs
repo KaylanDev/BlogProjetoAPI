@@ -1,6 +1,7 @@
 ﻿using Blog.Application.DTOs;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
+using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace Blog.Application.Interfaces
 {
   public  interface IComentsService 
     {
-        Task<IEnumerable<ComentsDTO>> GetAsync();
-        Task<ComentsDTO> GetByIdAsync(int id);
-        Task<ComentsDTO> CreateAsync(ComentsDTO entity);
-        Task<bool> UpdateAsync(ComentsDTO entity);
-        Task<bool> DeleteAsync(int id);
+        Task<Result<IEnumerable<ComentsDTO>>> GetAsync();
+        Task<Result<ComentsDTO>> GetByIdAsync(int id);
+        Task<Result<ComentsDTO>> CreateAsync(ComentsDTO entity);
+        Task<Result<bool>> UpdateAsync(ComentsDTO entity);
+        Task<Result<bool>> DeleteAsync(int id);
 
 
     }

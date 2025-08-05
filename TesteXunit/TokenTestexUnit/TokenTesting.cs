@@ -1,5 +1,7 @@
 ﻿using Blog.Application.Interfaces;
+using Blog.Infrastruture.Services;
 using Blog_Domain.Models;
+using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +33,7 @@ namespace TesteXunit.TokenTestexUnit
             var token = _tokenService.GenerateJwtToken(userId);
             // Assert
             Assert.NotNull(token);
-            Assert.IsType<string>(token);
+            Assert.IsType<Result<string>>(token);
             Assert.NotEmpty(token.Value);
         }
 
@@ -50,7 +52,7 @@ namespace TesteXunit.TokenTestexUnit
 
             //assert
             Assert.NotNull(refreshToken);
-            Assert.IsType<string>(refreshToken);
+            Assert.IsType<Result<string>>(refreshToken);
             Assert.NotEmpty(refreshToken.Value);
         }
 

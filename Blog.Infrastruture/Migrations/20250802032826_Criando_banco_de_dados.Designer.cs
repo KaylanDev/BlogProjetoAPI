@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog.Infrastruture.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250730010954_add_refreshTOken_teste")]
-    partial class add_refreshTOken_teste
+    [Migration("20250802032826_Criando_banco_de_dados")]
+    partial class Criando_banco_de_dados
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,7 @@ namespace Blog.Infrastruture.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
@@ -428,6 +428,13 @@ namespace Blog.Infrastruture.Migrations
                             Email = "teste@teste.com",
                             PasswordHash = "AHIjjUiOw1IVwAau3589yIYYrlMf6mjnvu98HDhs36Kx7ZwEqYnCw72xklLO4yZ1gw==",
                             Username = "admin"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Email = "teste2@teste.com",
+                            PasswordHash = "AHIjjUiOw1IVwAau3589yIYYrlMf6mjnvu98HDhs36Kx7ZwEqYnCw72xklLO4yZ1gw==",
+                            Username = "admin2"
                         });
                 });
 
@@ -436,13 +443,12 @@ namespace Blog.Infrastruture.Migrations
                     b.HasOne("Blog_Domain.Models.Post", "Post")
                         .WithMany("Coments")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Blog_Domain.Models.User", "User")
                         .WithMany("Coments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Post");

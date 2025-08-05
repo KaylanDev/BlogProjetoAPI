@@ -29,12 +29,13 @@ namespace Blog.Infrastruture.Services
    
                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-               new Claim(JwtRegisteredClaimNames.Email, user.Email)
+               new Claim(JwtRegisteredClaimNames.Email, user.Email),
+               new Claim(ClaimTypes.Role,"User")
              };
 
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("JWT").GetValue<string>("Secretkey")));
+                _configuration.GetSection("JWT").GetValue<string>("Secretkey"))) ?? throw new ArgumentNullException("secretKey n encontrada!");
             if (key is null)
             {
                 throw new Exception("JWT Secret key is not configured.");
@@ -47,6 +48,7 @@ namespace Blog.Infrastruture.Services
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(_configuration.GetSection("JWT").GetValue<int>("TokenValidityInMinutes")),
                 signingCredentials: creds
+                
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);

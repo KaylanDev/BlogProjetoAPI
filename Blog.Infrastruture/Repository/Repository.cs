@@ -1,6 +1,7 @@
 ﻿using Blog.Infrastruture.Context;
 using Blog_Domain.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,10 +60,10 @@ namespace Blog.Infrastruture.Repository
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(T entity)
+        public virtual async  Task<bool> DeleteAsync(int id)
         {
            
-            _context.Set<T>().Remove(entity);
+            _context.Set<T>().Remove(await _context.Set<T>().FindAsync(id));
             var result = await _context.SaveChangesAsync();
 
             return result > 0;

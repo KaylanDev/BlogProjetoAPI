@@ -11,7 +11,7 @@ public class Coment
     public int ComentId { get; set; }
     public string Content { get; set; }
     public DateTime CreatedAt { get; set; }
-    public int PostId { get; set; }
+    public int? PostId { get; set; }
     public int UserId { get; set; }
     // Navigation properties
     public virtual Post Post { get; set; }
