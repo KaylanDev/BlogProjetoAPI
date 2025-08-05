@@ -7,6 +7,7 @@ using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,45 +21,50 @@ namespace Blog.Application.Services
         {
             _comentsRepository = comentsRepository;
         }
-        public async Task<IEnumerable<ComentsDTO>> GetAsync()
+        public async Task<Result<IEnumerable<ComentsDTO>>> GetAsync()
         {
             var coments = await _comentsRepository.GetAsync();
 
-            return coments.ComentsForDTOLIst();
+            if (coments is null) return Result.Fail("Coments not found");
+
+            return Result.Ok(coments.ComentsForDTOLIst());
         }
-        public async Task<ComentsDTO> GetByIdAsync(int id)
+        public async Task<Result<ComentsDTO>> GetByIdAsync(int id)
         {
             var coment = await _comentsRepository.GetByIdAsync(id);
 
-            if (coment == null) return null;
-            return coment;
+            if (coment == null) return Result.Fail("Coment not found");
+            ComentsDTO comentsDTO = coment;
+            return Result.Ok(comentsDTO);
         }
-        public async Task<ComentsDTO> CreateAsync(ComentsDTO entity)
+        public async Task<Result<ComentsDTO>> CreateAsync(ComentsDTO entity)
         {
-            if (entity == null) return null;
+            if (entity is null ) return Result.Fail("Coments cannot be null! ");
             Coment coment = entity;
             var result = await _comentsRepository.CreateAsync(coment);
-            return result;
+            entity = result;
+            return Result.Ok(entity);
         }
-  public async Task<Result<bool>> UpdateAsync(ComentsDTO entity)
+        public async Task<Result<bool>> UpdateAsync(ComentsDTO entity)
         {
-            if (entity == null) return false;
+            if (entity == null) return Result.Fail("Coment cannot be null");
             var existingComent = await _comentsRepository.GetByIdAsync(entity.ComentId);
-            if (existingComent == null) return false;
+            if (existingComent == null) return Result.Fail("Coment not found"); ;
             existingComent = entity;
             var result = await _comentsRepository.UpdateAsync(existingComent);
-            return result;
+            return Result.OkIf(result,"failed update coment");
         }
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            if (id <= 0) return false;
+            if (id <= 0) return Result.Fail("id cannot be 0 or negative");
             var existingComent = await _comentsRepository.GetByIdAsync(id);
+            if (existingComent == null) return Result.Fail("Coment not found");
             var result = await _comentsRepository.DeleteAsync(id);
-            return result;
+            return Result.OkIf(result,"failed delete coment");
         }
 
 
 
-      
+
     }
 }

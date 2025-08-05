@@ -12,9 +12,9 @@ namespace Blog.Application.Interfaces
 {
   public  interface IComentsService 
     {
-        Task<IEnumerable<ComentsDTO>> GetAsync();
-        Task<ComentsDTO> GetByIdAsync(int id);
-        Task<ComentsDTO> CreateAsync(ComentsDTO entity);
+        Task<Result<IEnumerable<ComentsDTO>>> GetAsync();
+        Task<Result<ComentsDTO>> GetByIdAsync(int id);
+        Task<Result<ComentsDTO>> CreateAsync(ComentsDTO entity);
         Task<Result<bool>> UpdateAsync(ComentsDTO entity);
         Task<Result<bool>> DeleteAsync(int id);
 
