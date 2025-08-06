@@ -103,7 +103,7 @@ namespace Blog.API.Controllers
             }
             var updatedUser = await _userService.UpdateAsync(userDto,password);
 
-            if (updatedUser is null) return BadRequest("senha invalida!");
+            if (updatedUser.IsFailed) return BadRequest(updatedUser);
             
             return Ok(updatedUser.Value);
         }

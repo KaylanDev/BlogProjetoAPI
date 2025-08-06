@@ -8,7 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.PortableExecutable;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Blog.API.Controllers
@@ -76,7 +80,7 @@ namespace Blog.API.Controllers
         {
             if (post == null || string.IsNullOrEmpty(post.ImageUrl))
             {
-                return Result.Fail("Post ou URL da imagem nao existe");
+                return Result.Fail("post ou URL da imagem nao existe");
             }
             string imgUrl = post.ImageUrl;
 
@@ -105,17 +109,18 @@ namespace Blog.API.Controllers
             {
                 return NotFound("No posts found.");
             }
+
             return Ok(posts);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{PostId:int}")]
+        public async Task<IActionResult> GetById(int PostId)
         {
-            if (id <= 0) return BadRequest("Id invalido");
-            var post = await _postService.GetByIdAsync(id);
-            if (post == null)
+            if (PostId <= 0) return BadRequest("Id invalido");
+            var post = await _postService.GetByIdAsync(PostId);
+            if (post.IsFailed)
             {
-                return NotFound($"Post with id {id} not found.");
+                return NotFound(post.Errors);
             }
             PostDTO postDto = post.Value;
             return Ok(postDto);
@@ -129,45 +134,47 @@ namespace Blog.API.Controllers
                 return BadRequest("O titulo n pode estar vazio");
             }
             var result = await _postService.GetPostByTittle(tittle);
-            var posts = result.Value;
-            if (posts == null || !posts.Any())
+           
+            if (result.IsFailed)
             {
-                return NotFound($"Post com o titulo '{tittle}' nao encontrado.");
+                return NotFound(result.Errors);
             }
-            return Ok(posts);
+             
+            return Ok(result.Value);
         }
 
-        [HttpPost("UploadCreate")]
-        public async Task<IActionResult> UploadCreate(IFormFile img)
+        [HttpPost]
+        [Route("UploadCreate/{PostId:int}")]
+        public async Task<IActionResult> UploadCreate(IFormFile img,int PostId)
         {
             if (img == null)
             {
                 return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
             var result = await UploudImg(img);
-
-            return result.IsSuccess
-                ? Ok(result)
-                : BadRequest(result);
+            var post = await _postService.GetByIdAsync(PostId);
+            post.Value.ImageUrl = result.Value;
+            var updatedPost = await _postService.UpdateAsync(post.Value);
+            return Ok(post.Value);
         }
 
         [HttpDelete]
-        [Route("UploadDelete/{id:int}")]
-        public async Task<IActionResult> UploadDelete(int id)
+        [Route("UploadDelete/{Postid:int}")]
+        public async Task<IActionResult> UploadDelete(int PostId)
         {
-            if (id <= 0) return BadRequest("Id invalido");
-            var result = await _postService.GetByIdAsync(id);
+            if (PostId <= 0) return BadRequest("Id invalido");
+            var result = await _postService.GetByIdAsync(PostId);
             var post = result.Value;
             if (post == null)
             {
-                return NotFound($"Post with id {id} not found.");
+                return NotFound($"post with Postid {PostId} not found.");
             }
             if (!string.IsNullOrEmpty(post.ImageUrl))
             {
                 var resultDelete = UploadDelete(post);
-                if (!result.IsSuccess)
+                if (result.IsFailed)
                 {
-                    return BadRequest(resultDelete);
+                    return BadRequest(resultDelete.Errors);
                 }
             }
 
@@ -177,18 +184,18 @@ namespace Blog.API.Controllers
         }
 
         [HttpPut]
-        [Route("UploadUpdate/{id:int}")]
-        public async Task<IActionResult> UploadUpdate(int id, IFormFile img)
+        [Route("UploadUpdate/{Postid:int}")]
+        public async Task<IActionResult> UploadUpdate(int PostId, IFormFile img)
         {
-            if (id <= 0) return BadRequest("Id invalido");
+            if (PostId <= 0) return BadRequest("Id invalido");
             if (img == null)
             {
                 return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
-            var post = await _postService.GetByIdAsync(id);
-            if (post == null)
+            var post = await _postService.GetByIdAsync(PostId);
+            if (post.IsFailed)
             {
-                return NotFound($"Post with id {id} not found.");
+                return NotFound(post.Errors);
             }
             if (!string.IsNullOrEmpty(post.Value.ImageUrl))
             {
@@ -196,9 +203,9 @@ namespace Blog.API.Controllers
             }
         
             var result = await UploudImg(img);
-            if (!result.IsSuccess)
+            if (result.IsFailed)
             {
-                return BadRequest(result);
+                return BadRequest(result.Errors);
             }
              
 
@@ -206,52 +213,71 @@ namespace Blog.API.Controllers
             var updatedPost = await _postService.UpdateAsync(post.Value);
             if (updatedPost.IsFailed)
             {
-                return BadRequest(Result.Fail("Erro ao atualizar post!"));
+                return BadRequest(updatedPost.Errors);
             }
-            return Ok(result);
+            return Ok(post.Value);
         }
-
+        //modificar para pegar o user Postid do token
         [HttpPost]
-        public async Task<IActionResult> Create(PostDTO postDto)
+        public async Task<IActionResult> Create(PostDTORequest postDto)
         {
             if (postDto == null)
             {
-                return BadRequest(Result.Fail("Post cannot be null."));
+                return BadRequest(Result.Fail("post cannot be null."));
             }
-            Post Post = postDto;
-            var createdPost = await _postService.CreateAsync(Post);
-            if (createdPost == null)
+         
+            int userId = int.Parse( User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User ID not found in token."));
+
+            
+            var post = new Post
             {
-                return BadRequest(Result.Fail("erro ao criar post!"));
+                Content= postDto.Content,
+                Title = postDto.Title,
+
             }
-            return CreatedAtAction(nameof(Get), new { id = createdPost.Value.Id }, createdPost);
+            ;
+            post.UserId = userId; // Set the UserId from the authenticated user
+
+            var createdPost = await _postService.CreateAsync(post);
+            if (createdPost.IsFailed)
+            {
+                return BadRequest(createdPost.Errors);
+            }
+            return CreatedAtAction(nameof(Get), new { id = createdPost.Value.Id }, createdPost.Value);
 
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, PostDTO postDto)
+        [HttpPut("{Postid:int}")]
+        public async Task<IActionResult> Update(int Postid, PostDTORequest postDto)
         {
-            if (postDto == null || postDto.Id != id)
+            if (postDto == null )
             {
                 return BadRequest("Dados invalidos ou Id invalido");
             }
-            var updated = await _postService.UpdateAsync(postDto);
+            var posrDto = new PostDTO
+            {
+                Id = Postid,
+                Title = postDto.Title,
+                Content = postDto.Content,
+                UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User ID not found in token."))
+            };
+            var updated = await _postService.UpdateAsync(posrDto);
             if (updated.IsFailed)
             {
-                return BadRequest("ocorreu um erro ao salvar alteracoes");
+                return BadRequest(updated.Errors);
             }
-            return CreatedAtAction(nameof(GetById), new { id = postDto.Id }, postDto);
+            return CreatedAtAction(nameof(GetById), new { id = posrDto.Id }, postDto);
         }
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{Postid:int}")]
+        public async Task<IActionResult> Delete(int Postid)
         {
-            if (id <= 0) return BadRequest("Id invalido");
-            var deleted = await _postService.DeleteAsync(id);
+            if (Postid <= 0) return BadRequest("Id invalido");
+            var deleted = await _postService.DeleteAsync(Postid);
             if (deleted.IsFailed)
             {
-                return NotFound($"Post with id {id} not found.");
+                return NotFound(deleted.Errors);
             }
-            return Ok($"Post com Id {id} Deletado com sucesso!");
+            return Ok($"post com Id {Postid} Deletado com sucesso!");
         }
     }
 }

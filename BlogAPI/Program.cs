@@ -59,12 +59,17 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.Addinfrastruture(builder.Configuration);
 var secretkey = builder.Configuration.GetSection("JWT").GetValue<string>("Secretkey") ?? throw new ArgumentNullException("JWT Secret key not found!");
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
+    options.DefaultPolicy = options.GetPolicy("User") ?? throw new InvalidOperationException("Default policy not found.");
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.SaveToken = true;
         options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters
+        options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -75,11 +80,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretkey))
         };
     });
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("User", policy => policy.RequireRole("User"));
-    options.DefaultPolicy = options.GetPolicy("User") ?? throw new InvalidOperationException("Default policy not found.");
-});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
