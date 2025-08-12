@@ -7,8 +7,8 @@ using TesteXunit.RepositoryTestexUnit;
 using Blog.Application.Interfaces;
 using Blog_Domain.Repository;
 using Blog.Application.Services;
-using Blog.Application.DTOs;
 using FluentResults;
+using Blog.Application.DTOs.ComentDTOModel;
 
 namespace TesteXunit.ComentServiceTeste
 {
@@ -109,7 +109,7 @@ namespace TesteXunit.ComentServiceTeste
         [Fact]
         public async Task DeleteAsync_DeveRetornarSucesso_QuandoComentExiste()
         {
-            var result = await _comentsService.DeleteAsync(1);
+            var result = await _comentsService.DeleteAsync(1,1);
             result.Should().NotBeNull();
             result.IsSuccess.Should().BeTrue();
         }
@@ -117,7 +117,7 @@ namespace TesteXunit.ComentServiceTeste
         [Fact]
         public async Task DeleteAsync_DeveRetornarFalse_QuandoComentNaoExiste()
         {
-            var result = await _comentsService.DeleteAsync(-1);
+            var result = await _comentsService.DeleteAsync(-1,1);
             result.IsSuccess.Should().BeFalse();
         }
     }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Blog.Application.DTOs;
+namespace Blog.Application.DTOs.ComentDTOModel;
 
 public class ComentsDTO
 {
@@ -28,7 +28,7 @@ public class ComentsDTO
 
     public static implicit operator Coment(ComentsDTO comentDto)
     {
-        return new Blog_Domain.Models.Coment
+        return new Coment
         {
             ComentId = comentDto.ComentId,
             Content = comentDto.Content,

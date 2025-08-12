@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blog.Application.DTOs.ComentDTOModel;
 
 namespace Blog.Application.DTOs.UserModel
 {

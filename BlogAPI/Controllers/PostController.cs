@@ -113,11 +113,11 @@ namespace Blog.API.Controllers
             return Ok(posts);
         }
 
-        [HttpGet("{PostId:int}")]
-        public async Task<IActionResult> GetById(int PostId)
+        [HttpGet("{postId:int}")]
+        public async Task<IActionResult> GetById(int postId)
         {
-            if (PostId <= 0) return BadRequest("Id invalido");
-            var post = await _postService.GetByIdAsync(PostId);
+            if (postId <= 0) return BadRequest("Id invalido");
+            var post = await _postService.GetByIdAsync(postId);
             if (post.IsFailed)
             {
                 return NotFound(post.Errors);
@@ -144,30 +144,30 @@ namespace Blog.API.Controllers
         }
 
         [HttpPost]
-        [Route("UploadCreate/{PostId:int}")]
-        public async Task<IActionResult> UploadCreate(IFormFile img,int PostId)
+        [Route("UploadCreate/{postId:int}")]
+        public async Task<IActionResult> UploadCreate(IFormFile img,int postId)
         {
             if (img == null)
             {
                 return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
             var result = await UploudImg(img);
-            var post = await _postService.GetByIdAsync(PostId);
+            var post = await _postService.GetByIdAsync(postId);
             post.Value.ImageUrl = result.Value;
             var updatedPost = await _postService.UpdateAsync(post.Value);
             return Ok(post.Value);
         }
 
         [HttpDelete]
-        [Route("UploadDelete/{Postid:int}")]
-        public async Task<IActionResult> UploadDelete(int PostId)
+        [Route("UploadDelete/{postId:int}")]
+        public async Task<IActionResult> UploadDelete(int postId)
         {
-            if (PostId <= 0) return BadRequest("Id invalido");
-            var result = await _postService.GetByIdAsync(PostId);
+            if (postId <= 0) return BadRequest("Id invalido");
+            var result = await _postService.GetByIdAsync(postId);
             var post = result.Value;
             if (post == null)
             {
-                return NotFound($"post with Postid {PostId} not found.");
+                return NotFound($"post with postId {postId} not found.");
             }
             if (!string.IsNullOrEmpty(post.ImageUrl))
             {
@@ -180,19 +180,19 @@ namespace Blog.API.Controllers
 
             post.ImageUrl = null; // Clear the image URL after deletion
             await _postService.UpdateAsync(post);
-            return Ok(Result.Ok(post));
+            return Ok("imagem do post deletada com sucesso!");
         }
 
         [HttpPut]
-        [Route("UploadUpdate/{Postid:int}")]
-        public async Task<IActionResult> UploadUpdate(int PostId, IFormFile img)
+        [Route("UploadUpdate/{postId:int}")]
+        public async Task<IActionResult> UploadUpdate(int postId, IFormFile img)
         {
-            if (PostId <= 0) return BadRequest("Id invalido");
+            if (postId <= 0) return BadRequest("Id invalido");
             if (img == null)
             {
                 return BadRequest(Result.Fail("a imagem n pode ser nula!"));
             }
-            var post = await _postService.GetByIdAsync(PostId);
+            var post = await _postService.GetByIdAsync(postId);
             if (post.IsFailed)
             {
                 return NotFound(post.Errors);
@@ -217,7 +217,7 @@ namespace Blog.API.Controllers
             }
             return Ok(post.Value);
         }
-        //modificar para pegar o user Postid do token
+        //modificar para pegar o user postId do token
         [HttpPost]
         public async Task<IActionResult> Create(PostDTORequest postDto)
         {
@@ -247,8 +247,8 @@ namespace Blog.API.Controllers
 
         }
 
-        [HttpPut("{Postid:int}")]
-        public async Task<IActionResult> Update(int Postid, PostDTORequest postDto)
+        [HttpPut("{postId:int}")]
+        public async Task<IActionResult> Update(int postId, PostDTORequest postDto)
         {
             if (postDto == null )
             {
@@ -256,7 +256,7 @@ namespace Blog.API.Controllers
             }
             var posrDto = new PostDTO
             {
-                Id = Postid,
+                Id = postId,
                 Title = postDto.Title,
                 Content = postDto.Content,
                 UserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User ID not found in token."))
@@ -266,18 +266,19 @@ namespace Blog.API.Controllers
             {
                 return BadRequest(updated.Errors);
             }
-            return CreatedAtAction(nameof(GetById), new { id = posrDto.Id }, postDto);
+            return CreatedAtAction(nameof(GetById), new { postId = posrDto.Id }, postDto);
         }
-        [HttpDelete("{Postid:int}")]
-        public async Task<IActionResult> Delete(int Postid)
+        [HttpDelete("{postId:int}")]
+        public async Task<IActionResult> Delete(int postId)
         {
-            if (Postid <= 0) return BadRequest("Id invalido");
-            var deleted = await _postService.DeleteAsync(Postid);
+            if (postId <= 0) return BadRequest("Id invalido");
+            var deleted = await _postService.DeleteAsync(postId);
             if (deleted.IsFailed)
             {
                 return NotFound(deleted.Errors);
             }
-            return Ok($"post com Id {Postid} Deletado com sucesso!");
+            var deleteImg = await UploadDelete(postId);
+            return Ok($"post com Id {postId} Deletado com sucesso!");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.Application.DTOs.ComentDTOModel;
 using Blog_Domain.Models;
 using Blog_Domain.Repository;
 using FluentResults;
@@ -15,8 +15,8 @@ namespace Blog.Application.Interfaces
         Task<Result<IEnumerable<ComentsDTO>>> GetAsync();
         Task<Result<ComentsDTO>> GetByIdAsync(int id);
         Task<Result<ComentsDTO>> CreateAsync(ComentsDTO entity);
-        Task<Result<bool>> UpdateAsync(ComentsDTO entity);
-        Task<Result<bool>> DeleteAsync(int id);
+        Task<Result> UpdateAsync(ComentsDTO entity);
+        Task<Result> DeleteAsync(int ComentId,int userId);
 
 
     }

@@ -1,4 +1,5 @@
-﻿using Blog.Application.DTOs.Extensions;
+﻿using Blog.Application.DTOs.ComentDTOModel;
+using Blog.Application.DTOs.Extensions;
 using Blog_Domain.Models;
 using System;
 using System.Collections.Generic;

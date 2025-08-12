@@ -1,4 +1,4 @@
-﻿using Blog.Application.DTOs;
+﻿using Blog.Application.DTOs.ComentDTOModel;
 using Blog.Application.DTOs.Extensions;
 using Blog.Application.Interfaces;
 using Blog_Domain.Models;
@@ -45,21 +45,28 @@ namespace Blog.Application.Services
             entity = result;
             return Result.Ok(entity);
         }
-        public async Task<Result<bool>> UpdateAsync(ComentsDTO entity)
+        public async Task<Result> UpdateAsync(ComentsDTO entity)
         {
             if (entity == null) return Result.Fail("Coment cannot be null");
+
             var existingComent = await _comentsRepository.GetByIdAsync(entity.ComentId);
-            if (existingComent == null) return Result.Fail("Coment not found"); ;
-            existingComent = entity;
+            if (existingComent == null) return Result.Fail("Coment not found"); 
+
+            existingComent.Content = entity.Content;
+
             var result = await _comentsRepository.UpdateAsync(existingComent);
             return Result.OkIf(result,"failed update coment");
         }
-        public async Task<Result<bool>> DeleteAsync(int id)
+        public async Task<Result> DeleteAsync(int ComentId,int userId)
         {
-            if (id <= 0) return Result.Fail("id cannot be 0 or negative");
-            var existingComent = await _comentsRepository.GetByIdAsync(id);
+            if (ComentId <= 0 || userId <= 0) return Result.Fail("ComentId cannot be 0 or negative");
+
+            var existingComent = await _comentsRepository.GetByIdAsync(ComentId);
+
             if (existingComent == null) return Result.Fail("Coment not found");
-            var result = await _comentsRepository.DeleteAsync(id);
+            if (userId != existingComent.UserId) return Result.Fail("User not authorized to delete this coment");
+
+            var result = await _comentsRepository.DeleteAsync(ComentId);
             return Result.OkIf(result,"failed delete coment");
         }
 
